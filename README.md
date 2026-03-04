@@ -1,188 +1,252 @@
 # Verification Fieldbook PWA
+### Engineering Survey — Field Verification & As-Built Capture System
 
-## Engineering Survey Verification Fieldbook
+---
 
-A mobile-first, installable Progressive Web App for field engineers to import design survey data, verify index points with 1-8 readings, and export as-built results.
+## Overview
+
+A mobile-first, installable Progressive Web App (PWA) for capturing as-built survey verification readings in the field. Works fully offline after first load; all data stored locally in IndexedDB.
+
+---
+
+## Quick Start
+
+### Option A — Local Server (Recommended)
+```bash
+# Python 3
+python -m http.server 8080
+
+# Node.js (npx)
+npx serve .
+
+# Then open in browser:
+# http://localhost:8080
+```
+
+### Option B — Static Host (Nginx / Apache / Netlify / GitHub Pages)
+Copy the three files to your web root:
+```
+/
+├── index.html
+├── sw.js
+└── manifest.json
+```
+
+### Default Login
+| Field    | Value            |
+|----------|-----------------|
+| Username | `admin`          |
+| Password | `fieldbook2024`  |
+
+> Change password immediately via **Settings → Change Password**.
 
 ---
 
 ## Workflow
 
 ```
-Import Design CSV  -->  Verify Index  -->  Enter Readings  -->  Save  -->  Export
+1. Import Design CSV
+       ↓
+2. Verify / Capture: Lookup Index → Enter Readings → Save
+       ↓
+3. As-Built Table: Review, filter, edit notes
+       ↓
+4. Export: CSV or Excel (.xlsx)
 ```
 
-### 1. Import Design CSV
-- Navigate to **Import** tab
-- Drop or browse a `.csv` file containing: CHAIN, Left X-FALL, CENTRELINE DESIGN, Right X-FALL
-- Map columns if headers differ from expected names
-- Review import summary (row count, chain range, duplicates)
+---
 
-### 2. Verify Index Point
-- Navigate to **Verify** tab
-- Enter a chainage/index number
-- App matches to closest design point (VLOOKUP-style) or exact match
-- Selected design point card displays: Chain, Left X-Fall, CL Design Level, Right X-Fall
+## Feature Reference
 
-### 3. Enter Readings
-- Select number of verification points (1-8)
-- Auto-generated labels (L3, L2, L1, CL, R1, R2, R3) and target profile percentages
-- Enter staff readings and/or elevations
-- Optional: Enable BM Height + Staff auto-calculation in Settings
+### A. Authentication
+- PBKDF2-salted password hashing (Web Crypto API)
+- Session persists with configurable inactivity timeout (default 30 min)
+- Password change in Settings
 
-### 4. Save
+### B. PWA + Offline
+- Service worker caches app shell and CDN assets
+- Installable via browser "Add to Home Screen"
+- All data in IndexedDB — no backend required
+
+### C. Import Design CSV
+- Accepts `.csv` and `.xlsx` / `.xls`
+- Auto-detects column headers (CHAIN, Left X-Fall, CL Design Level, Right X-Fall)
+- Column mapping UI for non-standard headers
+- X-Fall normalization: |val| > 1 treated as percent (−2 → −0.02)
+- Duplicate chain detection (keeps last row, logs count)
+- Import summary with error reporting
+
+**Expected CSV format:**
+```
+CHAIN,Left X-FALL,CENTRELINE DESIGN,Right X-FALL
+0,−0.02,100.250,−0.02
+25.5,−0.02,100.188,−0.02
+50,−2,99.910,−2
+```
+
+### D. Setting Out / Stakeout
+- **Purpose**: Calculate design elevations and required staff readings for setting out construction stakes at specified offsets from centerline
+- **Workflow**:
+  1. Lookup chainage (SV) — loads CL Design Level and cross-fall data
+  2. Enter BM Height + Staff → calculates collimation automatically
+  3. Add nails (left/right) with:
+     - Travel (future use)
+     - Offset (distance from CL in meters)
+     - X-Fall % (cross-fall percentage)
+  4. System auto-calculates:
+     - **Design Elevation** = CL_Design + (Offset × X-Fall %)
+     - **Staff Reading** = Collimation − Design Elevation
+- **Example**:
+  ```
+  SV: 25, CL Design: 1542.602
+  BM Height: 1549.000, Staff on BM: 2.300 → Collimation: 1551.300
+  
+  Left Nail 1: Offset 5.250m, X-Fall -2%
+    Design = 1542.602 + (5.250 × -0.02) = 1542.497
+    Staff = 1551.300 - 1542.497 = 8.803
+  ```
+- **Save**: Stores all nails (left + right) as one stakeout entry
+- **Export**: CSV/XLSX with columns: SV, Side, Nail, Offset, X-Fall%, Design, Staff
+
+### E. Index Lookup
+- Two modes:
+  - **Closest ≤** (default, VLOOKUP approximate): finds the highest CHAIN ≤ input value
+  - **Exact match**: requires precise CHAIN value
+- Toggle per lookup or set default in Settings
+
+### F. Verification Points (1–8)
+- Select number of verification points (1–8)
+- Auto-generates symmetric profile:
+  - Odd N: includes true centerline at 0%
+  - Even N: straddles center with two near-center points
+- Labels: L3, L2, L1, CL, R1, R2, R3, R4 (editable per row)
+- Profile % editable per row
+- BM Height / Collimation mode (toggle in Settings):
+  - Enter BM Height + Staff on BM → collimation computed automatically
+  - Staff reading → elevation auto-calculated
+- Δ Design column: elevation − CL design level (green/red indicator)
+
+### G. Save Flow
+- Save button enabled only when: design point selected + ≥1 reading entered
 - Confirmation modal previews all entered values
-- Saves entry + child points to IndexedDB
-- Auto-clears for next entry
+- On confirm: writes `asbuilt_entries` + `asbuilt_points` records
+- Auto-clears for next entry (preserves point count setting)
 
-### 5. Export
-- **As-Built** tab shows all saved entries
-- Export to CSV or XLSX (two sheets: Entries_Wide + Points_Long)
-- Filter by chain range or search
+### H. As-Built Table
+- Filter by: date range, chain range
+- Click row eye icon → detail view with full point table
+- Edit notes inline
+- Delete entry with confirmation
 
----
+### I. Export
+| Export | Format | Description |
+|--------|--------|-------------|
+| Cross-Section Matrix | XLSX | **Field-grade format**: chainages as rows, cross-fall positions as columns with Actual/Design/Diff sub-columns |
+| Setting Out / Stakeout | CSV / XLSX | One row per nail: SV, Side, Offset, X-Fall%, Design, Staff |
+| Entries Wide | CSV / XLSX | One row per entry; P1–P8 columns |
+| Points Long | CSV / XLSX | One row per point |
+| Full Workbook | XLSX | All four sheets in one file |
 
-## Quick Start
-
-### Local Development
-```bash
-# Serve with any static HTTP server
-cd fieldbook
-python3 -m http.server 8080
-# or
-npx serve .
+**Cross-Section Matrix format:**
 ```
-
-Open `http://localhost:8080` in your browser.
-
-### Default Credentials
-- **Username:** admin
-- **Password:** fieldbook
-
-### Deploy to Production
-Copy all files to any static hosting (Nginx, Apache, Netlify, Vercel):
+SV    | -10.0           | -5.0            | 0.0             | 5.0             | 10.0
+      | Act  Des  Diff  | Act  Des  Diff  | Act  Des  Diff  | Act  Des  Diff  | Act  Des  Diff
+------+----------------+----------------+----------------+----------------+----------------
+100   | 1545 1544 0.72 | 1542 1542 -0.03| 1542 1542 -0.03| 1542 1542 -0.03| 1542 1542 -0.03
+120   | ...
 ```
-index.html
-manifest.json
-sw.js
-icons/icon-192.png
-icons/icon-512.png
-```
+This format is ideal for visual inspection of cross-sections and quality control in the field.
 
-### Nginx Example
-```nginx
-server {
-    listen 443 ssl;
-    server_name fieldbook.example.com;
-    root /var/www/fieldbook;
-    index index.html;
+**Entries Wide columns:**
+`created_at, user, input_index, resolved_chain, cl_design_level, left_xfall, right_xfall, point_count, notes, P1_label … P8_delta`
 
-    location / {
-        try_files $uri $uri/ /index.html;
-    }
-}
-```
-
-> **Note:** PWA installation requires HTTPS or localhost.
-
----
-
-## Features
-
-| Feature | Status |
-|---------|--------|
-| PBKDF2 password hashing | Yes |
-| Session timeout (configurable) | Yes |
-| Offline-first (IndexedDB) | Yes |
-| Installable PWA | Yes |
-| CSV import with column mapping | Yes |
-| X-Fall normalization (% or decimal) | Yes |
-| Approximate match (VLOOKUP) | Yes |
-| Exact match toggle | Yes |
-| 1-8 verification points | Yes |
-| Dynamic target profile | Yes |
-| BM Height / Collimation auto-calc | Yes |
-| Save confirmation modal | Yes |
-| As-Built history + detail view | Yes |
-| CSV export | Yes |
-| XLSX export (2 sheets) | Yes |
-| Data backup/restore (JSON) | Yes |
-| Responsive mobile UI | Yes |
-
----
-
-## Tech Stack
-
-- **UI:** Bootstrap 5.3 + Custom CSS
-- **CSV:** PapaParse
-- **XLSX:** SheetJS
-- **Storage:** IndexedDB (native)
-- **Auth:** PBKDF2 via Web Crypto API
-- **PWA:** Service Worker + Web Manifest
+**Points Long columns:**
+`entry_id, created_at, user, resolved_chain, seq, label, target_pct, staff_reading, elevation, delta_to_design, comment`
 
 ---
 
 ## Data Model
 
-### design_points
-| Field | Type | Description |
-|-------|------|-------------|
-| id | uuid | Primary key |
-| chain | number | Chainage value |
-| left_xfall | number | Decimal slope (-0.02 = -2%) |
-| cl_design_level | number | Centreline elevation |
-| right_xfall | number | Decimal slope |
-| raw | JSON | Original CSV row |
-| import_batch_id | uuid | Batch identifier |
-| imported_at | timestamp | Import timestamp |
+```
+design_points
+  id, chain, left_xfall, cl_design_level, right_xfall
+  raw, import_batch_id, imported_at
 
-### asbuilt_entries
-| Field | Type | Description |
-|-------|------|-------------|
-| id | uuid | Primary key |
-| created_at | timestamp | Save timestamp |
-| user | string | Username |
-| input_index | number | User-entered index |
-| resolved_chain | number | Matched design chain |
-| design_point_id | uuid | FK to design_points |
-| cl_design_level | number | Design elevation |
-| left_xfall | number | Left cross-fall |
-| right_xfall | number | Right cross-fall |
-| point_count | 1-8 | Number of readings |
-| notes | string | Optional notes |
+asbuilt_entries
+  id, created_at, user, input_index, resolved_chain
+  design_point_id, cl_design_level, left_xfall, right_xfall
+  point_count, notes
 
-### asbuilt_points
-| Field | Type | Description |
-|-------|------|-------------|
-| id | uuid | Primary key |
-| entry_id | uuid | FK to asbuilt_entries |
-| seq | 1-8 | Sequence number |
-| position_label | string | L3, CL, R2, etc. |
-| target_profile_pct | number | Target % |
-| staff_reading | number | Staff reading |
-| elevation | number | Computed elevation |
-| delta_to_design | number | Elevation - design |
-| comment | string | Optional comment |
+asbuilt_points
+  id, entry_id, seq, position_label, target_profile_pct
+  staff_reading, elevation, delta_to_design, comment
+
+stakeout_entries
+  id, created_at, user, input_index, resolved_chain
+  design_point_id, cl_design_level, left_xfall, right_xfall, notes
+
+stakeout_nails
+  id, entry_id, seq, side, label, travel, offset
+  xfall_pct, design, staff
+```
 
 ---
 
 ## Settings
 
-- **Session Timeout:** 5-480 minutes (default 30)
-- **BM Height/Staff:** Enable auto-calculation of elevation from collimation
-- **Match Mode:** Approximate (closest <=) or Exact
-- **Default Profile:** Configurable symmetric profile (e.g., -10, -5, 0, -5, -10)
+| Setting | Default | Description |
+|---------|---------|-------------|
+| Session Timeout | 30 min | Inactivity auto-logout |
+| BM Height / Staff | Off | Auto-calc elevation from collimation |
+| Profile Left | −10% | Default left cross-fall |
+| Profile Right | −10% | Default right cross-fall |
+| Match Mode | Closest ≤ | Index lookup default |
+
+---
+
+## Technology Stack
+
+| Library | Version | Purpose |
+|---------|---------|---------|
+| Bootstrap | 5.3.2 | UI framework |
+| Bootstrap Icons | 1.11.3 | Icons |
+| Dexie.js | 3.2.4 | IndexedDB wrapper |
+| PapaParse | 5.4.1 | CSV parsing |
+| SheetJS (xlsx) | 0.20.0 | Excel export |
+| Web Crypto API | native | Password hashing |
+| Service Worker | native | Offline caching |
+
+---
+
+## Security Notes
+
+- Authentication is **client-side only** — suitable for single-user or trusted device deployments
+- Passwords hashed with PBKDF2 (100,000 iterations, SHA-256, random salt)
+- Session tokens stored in localStorage with expiry
+- For multi-user or sensitive deployments, add a server-side auth layer
+
+---
+
+## Browser Compatibility
+
+| Browser | Support |
+|---------|---------|
+| Chrome / Edge (desktop + Android) | Full PWA |
+| Safari (iOS 16.4+) | Full PWA (install from Share menu) |
+| Firefox | Runs, limited PWA install |
 
 ---
 
 ## File Structure
+
 ```
 fieldbook/
-  index.html       # Complete application (single file)
-  manifest.json    # PWA manifest
-  sw.js            # Service worker for offline caching
-  icons/
-    icon-192.png   # PWA icon 192x192
-    icon-512.png   # PWA icon 512x512
-  README.md        # This file
+├── index.html      # Complete single-file application
+├── sw.js           # Service worker (offline caching)
+├── manifest.json   # PWA manifest (installability)
+└── README.md       # This file
 ```
+
+---
+
+*Version 1.0.0 — Engineering Survey Verification Fieldbook*

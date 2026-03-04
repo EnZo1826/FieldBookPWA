@@ -1,1722 +1,2906 @@
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="dark">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#e8a838">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=5.0,viewport-fit=cover,user-scalable=yes">
+<meta name="theme-color" content="#0a1628">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Verification Fieldbook</title>
+<meta name="apple-mobile-web-app-title" content="Fieldbook">
 <link rel="manifest" href="manifest.json">
-<link rel="icon" href="icons/icon-192.png">
-<link rel="apple-touch-icon" href="icons/icon-192.png">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<title>Verification Fieldbook</title>
+
+<!-- Bootstrap 5 + Icons -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<!-- Google Font: Syne (display) + DM Mono (data) -->
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
 <style>
+/* ============================================================
+   FIELDBOOK — DESIGN SYSTEM
+   Aesthetic: Industrial precision instrument — dark navy panels,
+   amber signal accents, monospace data readouts
+   ============================================================ */
 :root {
-  --vf-bg: #0a0f1a;
-  --vf-surface: #111827;
-  --vf-surface2: #1a2336;
-  --vf-border: #2a3548;
-  --vf-amber: #e8a838;
-  --vf-amber-dim: #b8852c;
-  --vf-amber-glow: rgba(232,168,56,0.15);
-  --vf-green: #34d399;
-  --vf-red: #f87171;
-  --vf-blue: #60a5fa;
-  --vf-text: #e2e8f0;
-  --vf-text-dim: #94a3b8;
-  --vf-mono: 'JetBrains Mono', monospace;
-  --vf-sans: 'IBM Plex Sans', sans-serif;
+  --navy:       #0a1628;
+  --navy-mid:   #111f3a;
+  --navy-light: #1a2f52;
+  --navy-panel: #0d1e38;
+  --amber:      #f59e0b;
+  --amber-glow: rgba(245,158,11,0.15);
+  --amber-dim:  #b45309;
+  --green:      #10b981;
+  --green-dim:  rgba(16,185,129,0.12);
+  --red:        #ef4444;
+  --red-dim:    rgba(239,68,68,0.12);
+  --sky:        #38bdf8;
+  --text:       #e2e8f0;
+  --text-muted: #64748b;
+  --text-dim:   #94a3b8;
+  --border:     rgba(255,255,255,0.08);
+  --border-lit: rgba(245,158,11,0.35);
+  --card-bg:    rgba(255,255,255,0.04);
+  --card-hover: rgba(255,255,255,0.06);
+  --inset:      rgba(0,0,0,0.25);
+
+  --font-display: 'Syne', sans-serif;
+  --font-data:    'DM Mono', monospace;
+  --font-body:    'Inter', sans-serif;
+
+  --radius:  10px;
+  --radius-sm: 6px;
 }
-* { box-sizing: border-box; }
-body {
-  font-family: var(--vf-sans);
-  background: var(--vf-bg);
-  color: var(--vf-text);
-  margin: 0; padding: 0;
-  min-height: 100dvh;
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  background: var(--navy);
+  color: var(--text);
+  font-family: var(--font-body);
+  min-height: 100vh;
+  font-size: 14px;
   overflow-x: hidden;
-}
-/* Scrollbar */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--vf-bg); }
-::-webkit-scrollbar-thumb { background: var(--vf-border); border-radius: 3px; }
-
-/* Typography */
-h1,h2,h3,h4,h5 { font-family: var(--vf-sans); font-weight: 700; }
-.mono { font-family: var(--vf-mono); }
-.text-amber { color: var(--vf-amber) !important; }
-.text-dim { color: var(--vf-text-dim) !important; }
-.bg-surface { background: var(--vf-surface) !important; }
-
-/* Nav */
-.vf-nav {
-  background: var(--vf-surface);
-  border-bottom: 1px solid var(--vf-border);
-  padding: 0.5rem 1rem;
-  position: sticky; top: 0; z-index: 1030;
-}
-.vf-nav .brand {
-  font-family: var(--vf-mono);
-  font-weight: 700;
-  color: var(--vf-amber);
-  font-size: 1.1rem;
-  letter-spacing: 1px;
-}
-.vf-nav .nav-link {
-  color: var(--vf-text-dim);
-  font-size: 0.85rem;
-  font-weight: 500;
-  padding: 0.4rem 0.7rem;
-  border-radius: 6px;
-  transition: all 0.2s;
-}
-.vf-nav .nav-link:hover, .vf-nav .nav-link.active {
-  color: var(--vf-amber);
-  background: var(--vf-amber-glow);
-}
-
-/* Bottom nav (mobile) */
-.vf-bottom-nav {
-  position: fixed; bottom: 0; left: 0; right: 0;
-  background: var(--vf-surface);
-  border-top: 1px solid var(--vf-border);
-  display: flex; z-index: 1030;
-  padding-bottom: env(safe-area-inset-bottom, 0);
-}
-.vf-bottom-nav .bnav-item {
-  flex: 1; text-align: center;
-  padding: 0.5rem 0.2rem;
-  color: var(--vf-text-dim);
-  font-size: 0.7rem;
-  text-decoration: none;
-  transition: all 0.2s;
-  cursor: pointer;
-}
-.vf-bottom-nav .bnav-item i { font-size: 1.2rem; display: block; margin-bottom: 2px; }
-.vf-bottom-nav .bnav-item.active, .vf-bottom-nav .bnav-item:hover {
-  color: var(--vf-amber);
-}
-
-/* Cards */
-.vf-card {
-  background: var(--vf-surface);
-  border: 1px solid var(--vf-border);
-  border-radius: 10px;
-  padding: 1.2rem;
-  margin-bottom: 1rem;
-}
-.vf-card.highlight {
-  border-color: var(--vf-amber);
-  box-shadow: 0 0 20px var(--vf-amber-glow);
-}
-
-/* Buttons */
-.btn-amber {
-  background: var(--vf-amber);
-  color: #000;
-  font-weight: 600;
-  border: none;
-}
-.btn-amber:hover { background: var(--vf-amber-dim); color: #000; }
-.btn-outline-amber {
-  border: 1px solid var(--vf-amber);
-  color: var(--vf-amber);
-  background: transparent;
-}
-.btn-outline-amber:hover {
-  background: var(--vf-amber-glow);
-  color: var(--vf-amber);
-  border-color: var(--vf-amber);
-}
-
-/* Form controls */
-.vf-input {
-  background: var(--vf-surface2);
-  border: 1px solid var(--vf-border);
-  color: var(--vf-text);
-  border-radius: 8px;
-  padding: 0.6rem 0.9rem;
-  font-family: var(--vf-mono);
-  font-size: 0.95rem;
+  margin: 0;
+  padding: 0;
   width: 100%;
-  transition: border-color 0.2s;
-}
-.vf-input:focus {
-  outline: none;
-  border-color: var(--vf-amber);
-  box-shadow: 0 0 0 3px var(--vf-amber-glow);
-}
-.vf-input::placeholder { color: var(--vf-text-dim); opacity: 0.6; }
-.vf-input.is-invalid { border-color: var(--vf-red); }
-
-.vf-label {
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: var(--vf-text-dim);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 0.3rem;
-  display: block;
 }
 
-/* Tables */
-.vf-table {
+/* ---- Scrollbar ---- */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--navy-mid); }
+::-webkit-scrollbar-thumb { background: var(--navy-light); border-radius: 3px; }
+
+/* ---- Page visibility ---- */
+.page { display: none; }
+.page.active { display: flex; }
+.app-page { display: none; }
+.app-page.active { display: block; }
+
+/* ============================================================
+   LOGIN
+   ============================================================ */
+.login-wrap {
+  min-height: 100vh;
+  min-height: 100dvh; /* Dynamic viewport height for mobile */
   width: 100%;
-  font-size: 0.85rem;
-  border-collapse: separate;
-  border-spacing: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(ellipse 60% 50% at 20% 80%, rgba(245,158,11,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 60% at 80% 20%, rgba(56,189,248,0.06) 0%, transparent 60%),
+    var(--navy);
+  padding: 1rem;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow-y: auto;
 }
-.vf-table th {
-  background: var(--vf-surface2);
-  color: var(--vf-amber);
-  font-weight: 600;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  padding: 0.6rem 0.7rem;
-  border-bottom: 1px solid var(--vf-border);
-  position: sticky; top: 0;
-}
-.vf-table td {
-  padding: 0.5rem 0.7rem;
-  border-bottom: 1px solid var(--vf-border);
-  font-family: var(--vf-mono);
-  font-size: 0.82rem;
-}
-.vf-table tr:hover td { background: var(--vf-amber-glow); }
 
-/* Toast */
-.vf-toast {
-  position: fixed; top: 80px; right: 20px; z-index: 9999;
-  padding: 0.8rem 1.2rem;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 0.9rem;
-  animation: slideIn 0.3s ease;
-  max-width: 90vw;
+.login-card {
+  background: var(--navy-panel);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 2.5rem 2rem;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px var(--border);
+  position: relative;
+  overflow: hidden;
+  margin: auto;
 }
-.vf-toast.success { background: #065f46; color: var(--vf-green); border: 1px solid var(--vf-green); }
-.vf-toast.error { background: #7f1d1d; color: var(--vf-red); border: 1px solid var(--vf-red); }
-.vf-toast.info { background: #1e3a5f; color: var(--vf-blue); border: 1px solid var(--vf-blue); }
-@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-/* Badge */
-.vf-badge {
-  display: inline-block;
-  padding: 0.15rem 0.5rem;
-  border-radius: 4px;
-  font-size: 0.72rem;
-  font-weight: 600;
-  font-family: var(--vf-mono);
+@media (max-width: 576px) {
+  .login-card {
+    padding: 2rem 1.5rem;
+    max-width: 100%;
+    border-radius: 12px;
+  }
 }
-.vf-badge.amber { background: var(--vf-amber-glow); color: var(--vf-amber); }
-.vf-badge.green { background: rgba(52,211,153,0.15); color: var(--vf-green); }
 
-/* Page wrapper */
-.vf-page { display: none; padding: 1rem; padding-bottom: 5rem; max-width: 900px; margin: 0 auto; }
-.vf-page.active { display: block; }
+.login-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--amber), transparent);
+}
 
-/* Login */
-#loginPage {
-  display: flex; align-items: center; justify-content: center;
-  min-height: 100dvh; padding: 2rem;
-}
-.login-box {
-  width: 100%; max-width: 380px;
-  text-align: center;
-}
 .login-logo {
-  font-family: var(--vf-mono);
-  font-size: 2.2rem;
-  font-weight: 700;
-  color: var(--vf-amber);
-  letter-spacing: 3px;
-  margin-bottom: 0.3rem;
-}
-.login-sub {
-  color: var(--vf-text-dim);
-  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
   margin-bottom: 2rem;
 }
 
-/* Stat card */
-.stat-card {
-  text-align: center;
-  padding: 1rem;
-}
-.stat-card .stat-val {
-  font-family: var(--vf-mono);
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: var(--vf-amber);
-}
-.stat-card .stat-label {
-  font-size: 0.75rem;
-  color: var(--vf-text-dim);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-/* Verification grid */
-.vf-grid-input {
-  width: 100%;
-  background: var(--vf-surface2);
-  border: 1px solid var(--vf-border);
-  color: var(--vf-text);
-  border-radius: 6px;
-  padding: 0.45rem 0.5rem;
-  font-family: var(--vf-mono);
-  font-size: 0.9rem;
-  text-align: center;
-}
-.vf-grid-input:focus {
-  outline: none;
-  border-color: var(--vf-amber);
-  box-shadow: 0 0 0 2px var(--vf-amber-glow);
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .desktop-nav { display: none !important; }
-  .vf-bottom-nav { display: flex !important; }
-  .vf-page { padding: 0.8rem; padding-bottom: 5.5rem; }
-}
-@media (min-width: 769px) {
-  .desktop-nav { display: flex !important; }
-  .vf-bottom-nav { display: none !important; }
-}
-
-/* File drop */
-.file-drop {
-  border: 2px dashed var(--vf-border);
+.login-icon {
+  width: 48px; height: 48px;
+  background: var(--amber-glow);
+  border: 1px solid var(--border-lit);
   border-radius: 10px;
-  padding: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: var(--amber);
+}
+
+.login-title { font-family: var(--font-display); font-size: 1.35rem; font-weight: 700; color: var(--text); margin: 0; }
+.login-sub { font-size: 0.75rem; color: var(--text-muted); margin: 0; font-family: var(--font-data); }
+
+/* ============================================================
+   NAVBAR
+   ============================================================ */
+.fb-navbar {
+  background: var(--navy-panel);
+  border-bottom: 1px solid var(--border);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+}
+
+.fb-navbar-brand {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--amber);
+  letter-spacing: 0.03em;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.fb-page-title {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  padding: 0.2rem 0.6rem;
+  background: var(--inset);
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  font-weight: 500;
+}
+
+.fb-status-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 6px var(--green);
+  flex-shrink: 0;
+}
+.fb-status-dot.offline { background: var(--red); box-shadow: 0 0 6px var(--red); }
+
+/* ============================================================
+   SIDEBAR (Offcanvas)
+   ============================================================ */
+.offcanvas { background: var(--navy-panel) !important; color: var(--text); border-right: 1px solid var(--border) !important; }
+.offcanvas-header { background: var(--navy-mid); border-bottom: 1px solid var(--border); }
+.offcanvas-title { font-family: var(--font-display); font-weight: 700; color: var(--amber); font-size: 1rem; }
+
+.nav-user-pill {
+  background: var(--inset);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0.75rem;
+}
+
+.nav-avatar {
+  width: 36px; height: 36px;
+  background: var(--amber-glow);
+  border: 1px solid var(--border-lit);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--amber);
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.nav-links { padding: 0.5rem; display: flex; flex-direction: column; gap: 2px; }
+
+.nav-link-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: var(--radius-sm);
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.15s;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.nav-link-item:hover {
+  background: var(--card-hover);
+  color: var(--text);
+}
+
+.nav-link-item.active {
+  background: var(--amber-glow);
+  border-color: var(--border-lit);
+  color: var(--amber);
+}
+
+.nav-link-item i { font-size: 0.95rem; width: 18px; text-align: center; }
+.nav-divider { border-color: var(--border) !important; margin: 0.4rem 0.5rem; }
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+.main-content { padding: 1rem; max-width: 100%; }
+
+/* ============================================================
+   CARDS
+   ============================================================ */
+.fb-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.fb-card-header {
+  padding: 0.85rem 1rem;
+  background: var(--inset);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.fb-card-title {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.fb-card-title i { color: var(--amber); }
+
+.fb-card-body { padding: 1rem; }
+
+/* ============================================================
+   STAT CARDS
+   ============================================================ */
+.stat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-bottom: 1rem; }
+@media (min-width: 768px) { .stat-grid { grid-template-columns: repeat(4, 1fr); } }
+
+.stat-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+
+.stat-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+}
+
+.stat-card.amber::after { background: var(--amber); }
+.stat-card.green::after { background: var(--green); }
+.stat-card.sky::after { background: var(--sky); }
+.stat-card.red::after { background: var(--red); }
+
+.stat-number {
+  font-family: var(--font-data);
+  font-size: 2rem;
+  font-weight: 500;
+  line-height: 1;
+  margin-bottom: 0.25rem;
+}
+.stat-card.amber .stat-number { color: var(--amber); }
+.stat-card.green .stat-number { color: var(--green); }
+.stat-card.sky .stat-number { color: var(--sky); }
+.stat-card.red .stat-number { color: var(--red); }
+
+.stat-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+
+/* ============================================================
+   FORMS
+   ============================================================ */
+.fb-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  display: block;
+  margin-bottom: 0.35rem;
+}
+
+.fb-input {
+  background: var(--inset) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text) !important;
+  border-radius: var(--radius-sm) !important;
+  font-family: var(--font-data) !important;
+  font-size: 0.88rem !important;
+  padding: 0.55rem 0.75rem !important;
+  transition: border-color 0.15s, box-shadow 0.15s !important;
+  width: 100%;
+}
+
+.fb-input:focus {
+  border-color: var(--amber) !important;
+  box-shadow: 0 0 0 2px var(--amber-glow) !important;
+  outline: none !important;
+}
+
+.fb-input::placeholder { color: var(--text-muted) !important; }
+.fb-input option { background: var(--navy-mid); color: var(--text); }
+
+.fb-select {
+  background: var(--inset) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 16 16'%3E%3Cpath fill='%2364748b' d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E") no-repeat right 0.75rem center !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+}
+
+/* Checkbox & Switch */
+.form-check-input { background-color: var(--inset) !important; border-color: var(--border) !important; }
+.form-check-input:checked { background-color: var(--amber) !important; border-color: var(--amber) !important; }
+.form-check-input:focus { box-shadow: 0 0 0 2px var(--amber-glow) !important; }
+.form-check-label { color: var(--text-dim); font-size: 0.82rem; }
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn-amber {
+  background: var(--amber);
+  color: var(--navy);
+  border: none;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+  padding: 0.55rem 1.2rem;
+  border-radius: var(--radius-sm);
+  transition: all 0.15s;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  min-height: 44px; /* iOS touch target minimum */
+}
+.btn-amber:hover { background: #fbbf24; color: var(--navy); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(245,158,11,0.3); }
+.btn-amber:disabled { opacity: 0.4; transform: none; box-shadow: none; cursor: not-allowed; }
+
+.btn-outline-amber {
+  background: transparent;
+  color: var(--amber);
+  border: 1px solid var(--border-lit);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.82rem;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-sm);
+  transition: all 0.15s;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  min-height: 44px;
+}
+.btn-outline-amber:hover { background: var(--amber-glow); color: var(--amber); }
+
+.btn-ghost {
+  background: var(--card-bg);
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+  font-size: 0.82rem;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-sm);
+  transition: all 0.15s;
+  cursor: pointer;
+}
+.btn-ghost:hover { background: var(--card-hover); color: var(--text); border-color: rgba(255,255,255,0.15); }
+
+.btn-danger-ghost {
+  background: transparent;
+  color: var(--red);
+  border: 1px solid rgba(239,68,68,0.3);
+  font-size: 0.82rem;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-sm);
+  transition: all 0.15s;
+  cursor: pointer;
+}
+.btn-danger-ghost:hover { background: var(--red-dim); border-color: rgba(239,68,68,0.6); }
+
+.btn-green {
+  background: var(--green);
+  color: #fff;
+  border: none;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+  padding: 0.55rem 1.2rem;
+  border-radius: var(--radius-sm);
+  transition: all 0.15s;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  min-height: 44px;
+}
+.btn-green:hover { background: #059669; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(16,185,129,0.3); }
+.btn-green:disabled { opacity: 0.4; transform: none; box-shadow: none; cursor: not-allowed; }
+
+.btn-icon {
+  background: var(--inset);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  padding: 0.4rem 0.55rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s;
+  font-size: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.btn-icon:hover { border-color: var(--amber); color: var(--amber); }
+
+/* ============================================================
+   TABLES
+   ============================================================ */
+.fb-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+.fb-table th {
+  background: var(--inset);
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.fb-table td { padding: 0.55rem 0.75rem; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: middle; }
+.fb-table tbody tr:last-child td { border-bottom: none; }
+.fb-table tbody tr:hover td { background: var(--card-hover); cursor: pointer; }
+
+.mono { font-family: var(--font-data); }
+
+/* ============================================================
+   DESIGN POINT RESULT CARD
+   ============================================================ */
+.dp-card {
+  background: var(--navy-mid);
+  border: 1px solid var(--border-lit);
+  border-radius: var(--radius);
+  padding: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+.dp-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--amber), transparent);
+}
+.dp-chain {
+  font-family: var(--font-data);
+  font-size: 1.3rem;
+  font-weight: 500;
+  color: var(--amber);
+  line-height: 1;
+}
+.dp-label { font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.15rem; }
+.dp-value { font-family: var(--font-data); font-size: 0.95rem; color: var(--text); }
+.dp-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-top: 0.75rem; text-align: center; }
+.dp-match-badge {
+  font-size: 0.68rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 20px;
+  background: var(--green-dim);
+  color: var(--green);
+  border: 1px solid rgba(16,185,129,0.3);
+  font-family: var(--font-data);
+}
+
+/* ============================================================
+   VERIFY TABLE
+   ============================================================ */
+.verify-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.verify-table { min-width: 580px; }
+.verify-table th { font-size: 0.68rem; }
+.verify-table td { padding: 0.4rem 0.5rem; }
+.verify-table input.fb-input { font-size: 0.82rem !important; padding: 0.35rem 0.5rem !important; }
+
+.delta-plus { color: var(--green); font-family: var(--font-data); font-weight: 500; font-size: 0.82rem; }
+.delta-minus { color: var(--red); font-family: var(--font-data); font-weight: 500; font-size: 0.82rem; }
+.delta-zero { color: var(--text-muted); font-family: var(--font-data); font-size: 0.82rem; }
+
+/* ============================================================
+   DROP ZONE
+   ============================================================ */
+.drop-zone {
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 2.5rem 1rem;
   text-align: center;
   cursor: pointer;
   transition: all 0.2s;
 }
-.file-drop:hover, .file-drop.dragover {
-  border-color: var(--vf-amber);
-  background: var(--vf-amber-glow);
+.drop-zone:hover, .drop-zone.dragover {
+  border-color: var(--amber);
+  background: var(--amber-glow);
+}
+.drop-zone-icon { font-size: 2.5rem; color: var(--text-muted); margin-bottom: 0.75rem; }
+.drop-zone-text { font-size: 0.88rem; color: var(--text-muted); }
+.drop-zone-sub { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem; font-family: var(--font-data); }
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+.fb-toast-wrap {
+  position: fixed;
+  bottom: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-/* Modal overrides */
-.modal-content {
-  background: var(--vf-surface);
-  border: 1px solid var(--vf-border);
-  border-radius: 12px;
+.fb-toast {
+  background: var(--navy-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.75rem 1.25rem;
+  font-size: 0.82rem;
+  color: var(--text);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: all 0.25s;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 200px;
+  max-width: 340px;
+  white-space: nowrap;
 }
-.modal-header { border-bottom-color: var(--vf-border); }
-.modal-footer { border-top-color: var(--vf-border); }
 
-/* Pulse animation for active capture */
-@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
-.pulse { animation: pulse 2s infinite; }
+.fb-toast.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+.fb-toast.toast-success { border-color: rgba(16,185,129,0.4); }
+.fb-toast.toast-success .toast-icon { color: var(--green); }
+.fb-toast.toast-warning { border-color: rgba(245,158,11,0.4); }
+.fb-toast.toast-warning .toast-icon { color: var(--amber); }
+.fb-toast.toast-danger { border-color: rgba(239,68,68,0.4); }
+.fb-toast.toast-danger .toast-icon { color: var(--red); }
+
+/* ============================================================
+   MODALS
+   ============================================================ */
+.modal-content { background: var(--navy-panel); color: var(--text); border: 1px solid var(--border); border-radius: var(--radius); }
+.modal-header { background: var(--inset); border-bottom: 1px solid var(--border); }
+.modal-title { font-family: var(--font-display); font-size: 0.95rem; font-weight: 700; color: var(--text); }
+.modal-footer { border-top: 1px solid var(--border); background: var(--inset); }
+.btn-close { filter: invert(1); }
+
+/* ============================================================
+   MISC
+   ============================================================ */
+.section-divider { border-color: var(--border) !important; margin: 1rem 0; }
+.tag { display: inline-flex; align-items: center; gap: 0.25rem; font-family: var(--font-data); font-size: 0.7rem; padding: 0.2rem 0.5rem; border-radius: 4px; border: 1px solid; }
+.tag-amber { color: var(--amber); border-color: var(--border-lit); background: var(--amber-glow); }
+.tag-green { color: var(--green); border-color: rgba(16,185,129,0.3); background: var(--green-dim); }
+.tag-sky { color: var(--sky); border-color: rgba(56,189,248,0.3); background: rgba(56,189,248,0.1); }
+.tag-red { color: var(--red); border-color: rgba(239,68,68,0.3); background: var(--red-dim); }
+
+.alert-fb { background: var(--inset); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.75rem 1rem; font-size: 0.82rem; }
+.alert-fb.success { border-color: rgba(16,185,129,0.3); color: var(--green); }
+.alert-fb.warning { border-color: rgba(245,158,11,0.3); color: var(--amber); }
+.alert-fb.danger { border-color: rgba(239,68,68,0.3); color: var(--red); }
+.alert-fb.info { border-color: rgba(56,189,248,0.3); color: var(--sky); }
+
+.text-mono { font-family: var(--font-data); }
+.text-amber { color: var(--amber); }
+.text-muted-fb { color: var(--text-muted); }
+
+/* Bottom save bar */
+.save-bar {
+  position: sticky;
+  bottom: 0;
+  background: var(--navy-panel);
+  border-top: 1px solid var(--border);
+  padding: 0.75rem 1rem;
+  display: flex;
+  gap: 0.5rem;
+  z-index: 50;
+}
+
+/* List entries */
+.entry-row-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+  cursor: pointer;
+}
+.entry-row-item:last-child { border-bottom: none; }
+.entry-row-item:hover { background: var(--card-hover); }
+
+/* Number inputs */
+input[type="number"] { -moz-appearance: textfield; }
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+/* Export card */
+.export-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.export-card:hover { border-color: rgba(255,255,255,0.12); }
+.export-card-icon { font-size: 1.75rem; }
+.export-card-title { font-family: var(--font-display); font-weight: 700; font-size: 0.9rem; color: var(--text); }
+.export-card-desc { font-size: 0.78rem; color: var(--text-muted); }
+
+/* Pagination */
+.fb-pagination { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; border-top: 1px solid var(--border); font-size: 0.78rem; color: var(--text-muted); }
+
+/* Mobile  */
+@media (max-width: 576px) {
+  .main-content { padding: 0.75rem; }
+  .fb-card-body { padding: 0.75rem; }
+  
+  /* Login adjustments */
+  .login-wrap { padding: 1rem 0.75rem; }
+  .login-logo { flex-direction: column; align-items: center; text-align: center; gap: 0.5rem; }
+  
+  /* Stat grid mobile layout */
+  .stat-grid { grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
+  
+  /* Export cards mobile */
+  .export-card { padding: 1rem; }
+  
+  /* Tables mobile scroll */
+  .verify-wrap { margin: 0 -0.75rem; padding: 0 0.75rem; }
+  
+  /* Navbar mobile */
+  .fb-navbar { padding: 0.5rem 0.75rem; gap: 0.5rem; flex-wrap: wrap; }
+  .fb-navbar-brand { font-size: 0.85rem; }
+  .fb-page-title { font-size: 0.72rem; padding: 0.15rem 0.5rem; }
+  
+  /* Modal mobile */
+  .modal-dialog { margin: 0.5rem; }
+  
+  /* Settings grid mobile */
+  #bm-fields, [style*="grid-template-columns: 1fr 1fr"] { grid-template-columns: 1fr !important; }
+}
+
+/* Safe area insets for notched devices */
+@supports (padding: max(0px)) {
+  .fb-navbar {
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+  .login-wrap {
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+}
 </style>
 </head>
 <body>
 
-<!-- ===== LOGIN PAGE ===== -->
-<div id="loginPage">
-  <div class="login-box">
-    <div class="login-logo">VFieldbook</div>
-    <div class="login-sub">Engineering Survey Verification Fieldbook</div>
-    <div class="vf-card">
-      <div class="mb-3">
-        <label class="vf-label">Username</label>
-        <input type="text" id="loginUser" class="vf-input" placeholder="admin" autocomplete="username">
+<!-- ===================== LOGIN PAGE ===================== -->
+<div id="page-login" class="page">
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="login-logo">
+        <div class="login-icon"><i class="bi bi-clipboard2-data-fill"></i></div>
+        <div>
+          <div class="login-title">Verification Fieldbook</div>
+          <div class="login-sub">ENGINEERING SURVEY SYSTEM</div>
+        </div>
       </div>
-      <div class="mb-3">
-        <label class="vf-label">Password</label>
-        <input type="password" id="loginPass" class="vf-input" placeholder="Password" autocomplete="current-password">
-      </div>
-      <div id="loginError" class="text-danger small mb-2" style="display:none"></div>
-      <button id="loginBtn" class="btn btn-amber w-100" onclick="App.auth.login()">Sign In</button>
-      <div class="mt-3 text-dim" style="font-size:0.75rem">
-        Default: admin / fieldbook
+
+      <form id="login-form" autocomplete="on">
+        <div class="mb-3">
+          <label class="fb-label" for="login-user">Username</label>
+          <div style="position:relative;">
+            <i class="bi bi-person" style="position:absolute;left:0.75rem;top:50%;transform:translateY(-50%);color:var(--text-muted);pointer-events:none;"></i>
+            <input type="text" id="login-user" class="fb-input" style="padding-left:2.25rem!important;"
+                   placeholder="Enter username" autocomplete="username" required>
+          </div>
+        </div>
+        <div class="mb-4">
+          <label class="fb-label" for="login-pass">Password</label>
+          <div style="position:relative;">
+            <i class="bi bi-lock" style="position:absolute;left:0.75rem;top:50%;transform:translateY(-50%);color:var(--text-muted);pointer-events:none;"></i>
+            <input type="password" id="login-pass" class="fb-input" style="padding-left:2.25rem!important;padding-right:2.5rem!important;"
+                   placeholder="Enter password" autocomplete="current-password" required>
+            <button type="button" id="toggle-pw" style="position:absolute;right:0.6rem;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;padding:0.2rem;">
+              <i class="bi bi-eye" id="toggle-pw-icon"></i>
+            </button>
+          </div>
+        </div>
+        <div id="login-error" class="alert-fb danger mb-3 d-none" style="display:none!important;">
+          <i class="bi bi-exclamation-triangle me-2"></i>Invalid credentials. Please try again.
+        </div>
+        <button type="submit" class="btn-amber w-100" style="padding:0.75rem;font-size:0.9rem;" id="login-btn">
+          <span id="login-spin" class="d-none"><i class="bi bi-arrow-repeat me-1" style="animation:spin 1s linear infinite;"></i></span>
+          <i class="bi bi-box-arrow-in-right me-2" id="login-icon"></i>Sign In
+        </button>
+      </form>
+      <div style="text-align:center;margin-top:1rem;font-size:0.72rem;color:var(--text-muted);font-family:var(--font-data);">
+        Default: admin / fieldbook2024
       </div>
     </div>
-    <div id="installBanner" style="display:none" class="mt-3">
-      <button class="btn btn-outline-amber btn-sm" onclick="App.pwa.install()">
-        <i class="bi bi-download"></i> Install App
+  </div>
+</div>
+
+<!-- ===================== MAIN APP ===================== -->
+<div id="app-shell" class="d-none">
+
+  <!-- Navbar -->
+  <div class="fb-navbar">
+    <button class="btn-icon" data-bs-toggle="offcanvas" data-bs-target="#sidebar-nav" style="padding:0.45rem 0.6rem;">
+      <i class="bi bi-list" style="font-size:1.1rem;"></i>
+    </button>
+    <div class="fb-navbar-brand">
+      <i class="bi bi-clipboard2-data-fill"></i>FIELDBOOK
+    </div>
+    <div class="fb-page-title" id="nav-page-title">Dashboard</div>
+    <div class="ms-auto d-flex align-items-center gap-2">
+      <div class="fb-status-dot" id="net-dot"></div>
+      <span style="font-size:0.72rem;color:var(--text-muted);font-family:var(--font-data);" id="net-label">ONLINE</span>
+      <button class="btn-icon" id="btn-logout" title="Logout">
+        <i class="bi bi-box-arrow-right"></i>
       </button>
     </div>
   </div>
-</div>
 
-<!-- ===== APP SHELL ===== -->
-<div id="appShell" style="display:none">
-
-  <!-- Top Nav -->
-  <nav class="vf-nav d-flex align-items-center justify-content-between">
-    <div class="brand">VFieldbook</div>
-    <div class="desktop-nav d-flex gap-1 align-items-center">
-      <a class="nav-link" data-page="dashboard" onclick="App.nav('dashboard')"><i class="bi bi-grid-1x2"></i> Dashboard</a>
-      <a class="nav-link" data-page="import" onclick="App.nav('import')"><i class="bi bi-upload"></i> Import</a>
-      <a class="nav-link" data-page="design" onclick="App.nav('design')"><i class="bi bi-table"></i> Design</a>
-      <a class="nav-link" data-page="verify" onclick="App.nav('verify')"><i class="bi bi-crosshair"></i> Verify</a>
-      <a class="nav-link" data-page="asbuilt" onclick="App.nav('asbuilt')"><i class="bi bi-clipboard-data"></i> As-Built</a>
-      <a class="nav-link" data-page="settings" onclick="App.nav('settings')"><i class="bi bi-gear"></i> Settings</a>
-      <a class="nav-link" onclick="App.auth.logout()"><i class="bi bi-box-arrow-right"></i></a>
+  <!-- Sidebar -->
+  <div class="offcanvas offcanvas-start" id="sidebar-nav" style="max-width:268px;">
+    <div class="offcanvas-header">
+      <span class="offcanvas-title"><i class="bi bi-clipboard2-data-fill me-2"></i>FIELDBOOK</span>
+      <button class="btn-close" data-bs-dismiss="offcanvas"></button>
     </div>
-    <button class="btn btn-sm d-md-none" style="color:var(--vf-text-dim)" onclick="App.auth.logout()"><i class="bi bi-box-arrow-right"></i></button>
-  </nav>
-
-  <!-- Bottom Nav (Mobile) -->
-  <div class="vf-bottom-nav">
-    <a class="bnav-item" data-page="dashboard" onclick="App.nav('dashboard')"><i class="bi bi-grid-1x2"></i>Home</a>
-    <a class="bnav-item" data-page="import" onclick="App.nav('import')"><i class="bi bi-upload"></i>Import</a>
-    <a class="bnav-item" data-page="verify" onclick="App.nav('verify')"><i class="bi bi-crosshair"></i>Verify</a>
-    <a class="bnav-item" data-page="asbuilt" onclick="App.nav('asbuilt')"><i class="bi bi-clipboard-data"></i>As-Built</a>
-    <a class="bnav-item" data-page="settings" onclick="App.nav('settings')"><i class="bi bi-gear"></i>More</a>
+    <div class="offcanvas-body p-0">
+      <div class="nav-user-pill">
+        <div class="nav-avatar" id="sidebar-avatar">A</div>
+        <div>
+          <div style="font-weight:600;font-size:0.85rem;" id="sidebar-username">Admin</div>
+          <div style="font-size:0.7rem;color:var(--text-muted);">Field Engineer</div>
+        </div>
+      </div>
+      <div class="nav-links">
+        <a class="nav-link-item" href="#" data-nav="dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a>
+        <a class="nav-link-item" href="#" data-nav="import"><i class="bi bi-file-earmark-arrow-up"></i> Import Design</a>
+        <a class="nav-link-item" href="#" data-nav="design-table"><i class="bi bi-table"></i> Design Points</a>
+        <a class="nav-link-item" href="#" data-nav="capture"><i class="bi bi-pencil-square"></i> Verify / Capture</a>
+        <a class="nav-link-item" href="#" data-nav="stakeout"><i class="bi bi-geo-alt"></i> Setting Out</a>
+        <a class="nav-link-item" href="#" data-nav="asbuilt"><i class="bi bi-archive"></i> As-Built Table</a>
+        <a class="nav-link-item" href="#" data-nav="export"><i class="bi bi-download"></i> Export</a>
+        <hr class="nav-divider">
+        <a class="nav-link-item" href="#" data-nav="settings"><i class="bi bi-gear"></i> Settings</a>
+      </div>
+    </div>
   </div>
 
-  <!-- ===== DASHBOARD ===== -->
-  <div id="page-dashboard" class="vf-page active">
-    <h4 class="mb-3">Dashboard</h4>
-    <div class="row g-3 mb-3">
-      <div class="col-6 col-md-3">
-        <div class="vf-card stat-card">
-          <div class="stat-val" id="statDesign">0</div>
+  <!-- Page Content -->
+  <div class="main-content">
+
+    <!-- ============ DASHBOARD ============ -->
+    <div class="app-page" id="pg-dashboard">
+      <div class="stat-grid">
+        <div class="stat-card amber">
+          <div class="stat-number" id="s-design">0</div>
           <div class="stat-label">Design Points</div>
         </div>
-      </div>
-      <div class="col-6 col-md-3">
-        <div class="vf-card stat-card">
-          <div class="stat-val" id="statEntries">0</div>
-          <div class="stat-label">As-Built Entries</div>
+        <div class="stat-card green">
+          <div class="stat-number" id="s-entries">0</div>
+          <div class="stat-label">Entries Saved</div>
+        </div>
+        <div class="stat-card sky">
+          <div class="stat-number" id="s-points">0</div>
+          <div class="stat-label">Points Captured</div>
+        </div>
+        <div class="stat-card red">
+          <div class="stat-number" id="s-stakeout">0</div>
+          <div class="stat-label">Stakeout Entries</div>
         </div>
       </div>
-      <div class="col-6 col-md-3">
-        <div class="vf-card stat-card">
-          <div class="stat-val" id="statChainRange">--</div>
-          <div class="stat-label">Chain Range</div>
-        </div>
-      </div>
-      <div class="col-6 col-md-3">
-        <div class="vf-card stat-card">
-          <div class="stat-val" id="statUser">--</div>
-          <div class="stat-label">Logged In</div>
-        </div>
-      </div>
-    </div>
-    <div class="vf-card">
-      <h6 class="text-amber mb-2">Quick Actions</h6>
-      <div class="d-flex gap-2 flex-wrap">
-        <button class="btn btn-amber btn-sm" onclick="App.nav('verify')"><i class="bi bi-crosshair"></i> New Verification</button>
-        <button class="btn btn-outline-amber btn-sm" onclick="App.nav('import')"><i class="bi bi-upload"></i> Import Design</button>
-        <button class="btn btn-outline-amber btn-sm" onclick="App.nav('asbuilt')"><i class="bi bi-clipboard-data"></i> View As-Built</button>
-      </div>
-    </div>
-    <div class="vf-card">
-      <h6 class="text-amber mb-2">Recent Entries</h6>
-      <div id="dashRecent" class="text-dim small">No entries yet.</div>
-    </div>
-  </div>
 
-  <!-- ===== IMPORT DESIGN ===== -->
-  <div id="page-import" class="vf-page">
-    <h4 class="mb-3">Import Design CSV</h4>
-    <div class="vf-card">
-      <div class="file-drop" id="fileDrop" onclick="document.getElementById('csvFile').click()">
-        <i class="bi bi-file-earmark-spreadsheet" style="font-size:2rem;color:var(--vf-amber)"></i>
-        <div class="mt-2 fw-semibold">Drop CSV file here or tap to browse</div>
-        <div class="text-dim small mt-1">Accepts .csv files with CHAIN, Left X-FALL, CENTRELINE DESIGN, Right X-FALL</div>
-        <input type="file" id="csvFile" accept=".csv,.txt" style="display:none" onchange="App.import.fileSelected(this)">
-      </div>
-    </div>
+      <div style="display:grid;grid-template-columns:1fr;gap:0.75rem;">
 
-    <!-- Column Mapping -->
-    <div id="importMapping" class="vf-card" style="display:none">
-      <h6 class="text-amber mb-2">Column Mapping</h6>
-      <div class="small text-dim mb-2">Map CSV columns to required fields:</div>
-      <div class="row g-2">
-        <div class="col-6">
-          <label class="vf-label">CHAIN</label>
-          <select id="mapChain" class="vf-input"></select>
-        </div>
-        <div class="col-6">
-          <label class="vf-label">Left X-FALL</label>
-          <select id="mapLeftXfall" class="vf-input"></select>
-        </div>
-        <div class="col-6">
-          <label class="vf-label">CENTRELINE DESIGN</label>
-          <select id="mapCLDesign" class="vf-input"></select>
-        </div>
-        <div class="col-6">
-          <label class="vf-label">Right X-FALL</label>
-          <select id="mapRightXfall" class="vf-input"></select>
-        </div>
-      </div>
-      <div class="mt-3">
-        <button class="btn btn-amber" onclick="App.import.processMapping()">Import Data</button>
-        <button class="btn btn-outline-amber ms-2" onclick="App.import.cancel()">Cancel</button>
-      </div>
-    </div>
-
-    <!-- Import Summary -->
-    <div id="importSummary" class="vf-card" style="display:none">
-      <h6 class="text-amber mb-2">Import Summary</h6>
-      <div id="importSummaryContent"></div>
-    </div>
-
-    <!-- Preview -->
-    <div id="importPreview" class="vf-card" style="display:none">
-      <h6 class="text-amber mb-2">Data Preview (first 10 rows)</h6>
-      <div style="overflow-x:auto">
-        <table class="vf-table" id="previewTable"></table>
-      </div>
-    </div>
-  </div>
-
-  <!-- ===== DESIGN POINTS ===== -->
-  <div id="page-design" class="vf-page">
-    <h4 class="mb-3">Design Points</h4>
-    <div class="vf-card">
-      <div class="d-flex gap-2 mb-3 flex-wrap align-items-center">
-        <input type="text" id="designSearch" class="vf-input" style="max-width:250px" placeholder="Search CHAIN..." oninput="App.design.search()">
-        <span class="vf-badge amber" id="designCount">0 points</span>
-        <button class="btn btn-outline-amber btn-sm ms-auto" onclick="App.design.clearAll()"><i class="bi bi-trash"></i> Clear All</button>
-      </div>
-      <div style="overflow-x:auto; max-height:60vh;">
-        <table class="vf-table">
-          <thead>
-            <tr><th>#</th><th>CHAIN</th><th>Left X-Fall</th><th>CL Design</th><th>Right X-Fall</th><th>Imported</th></tr>
-          </thead>
-          <tbody id="designTableBody"></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <!-- ===== VERIFY / CAPTURE ===== -->
-  <div id="page-verify" class="vf-page">
-    <h4 class="mb-3">Verify / Capture</h4>
-
-    <!-- Index Lookup -->
-    <div class="vf-card">
-      <label class="vf-label">Index No (CHAIN / SV)</label>
-      <div class="d-flex gap-2">
-        <input type="number" step="any" id="verifyIndex" class="vf-input" placeholder="Enter chainage..." inputmode="decimal">
-        <button class="btn btn-amber" onclick="App.verify.lookup()"><i class="bi bi-search"></i></button>
-      </div>
-      <div class="mt-2 d-flex gap-2 align-items-center">
-        <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" id="exactMatch">
-          <label class="form-check-label small text-dim" for="exactMatch">Exact match only</label>
-        </div>
-      </div>
-    </div>
-
-    <!-- Selected Point -->
-    <div id="selectedPoint" class="vf-card highlight" style="display:none">
-      <div class="d-flex justify-content-between align-items-start mb-2">
-        <h6 class="text-amber mb-0"><i class="bi bi-crosshair"></i> Selected Design Point</h6>
-        <button class="btn btn-sm btn-outline-amber" onclick="App.nav('design')">View Table</button>
-      </div>
-      <div class="row g-2 mono" style="font-size:0.85rem">
-        <div class="col-6"><span class="text-dim">Input:</span> <strong id="spInput"></strong></div>
-        <div class="col-6"><span class="text-dim">Chain:</span> <strong id="spChain" class="text-amber"></strong></div>
-        <div class="col-4"><span class="text-dim">L X-Fall:</span> <strong id="spLeft"></strong></div>
-        <div class="col-4"><span class="text-dim">CL:</span> <strong id="spCL"></strong></div>
-        <div class="col-4"><span class="text-dim">R X-Fall:</span> <strong id="spRight"></strong></div>
-      </div>
-    </div>
-
-    <!-- Verification Points -->
-    <div id="verifySection" style="display:none">
-      <div class="vf-card">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <label class="vf-label mb-0">Verification Points</label>
-          <select id="pointCount" class="vf-input" style="width:80px" onchange="App.verify.buildGrid()">
-            <option value="1">1</option><option value="2">2</option><option value="3" selected>3</option>
-            <option value="4">4</option><option value="5">5</option><option value="6">6</option>
-            <option value="7">7</option><option value="8">8</option>
-          </select>
-        </div>
-
-        <!-- BM/Collimation bar -->
-        <div id="bmBar" style="display:none" class="mb-3 p-2 rounded" style="background:var(--vf-surface2)">
-          <div class="row g-2">
-            <div class="col-4">
-              <label class="vf-label">BM Height</label>
-              <input type="number" step="any" id="bmHeight" class="vf-grid-input" inputmode="decimal" oninput="App.verify.calcCollimation()">
-            </div>
-            <div class="col-4">
-              <label class="vf-label">BM Staff</label>
-              <input type="number" step="any" id="bmStaff" class="vf-grid-input" inputmode="decimal" oninput="App.verify.calcCollimation()">
-            </div>
-            <div class="col-4">
-              <label class="vf-label">Collimation</label>
-              <div id="collimationVal" class="mono text-amber text-center pt-2">--</div>
-            </div>
+        <!-- Quick Actions -->
+        <div class="fb-card">
+          <div class="fb-card-header">
+            <div class="fb-card-title"><i class="bi bi-lightning-charge"></i>Quick Actions</div>
+          </div>
+          <div class="fb-card-body" style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;">
+            <button class="btn-amber" data-nav="capture"><i class="bi bi-pencil-square me-1"></i>Verify</button>
+            <button class="btn-green" data-nav="stakeout"><i class="bi bi-geo-alt me-1"></i>Stakeout</button>
+            <button class="btn-outline-amber" data-nav="import"><i class="bi bi-upload me-1"></i>Import</button>
+            <button class="btn-ghost" data-nav="asbuilt"><i class="bi bi-archive me-1"></i>As-Built</button>
           </div>
         </div>
 
-        <!-- Grid -->
-        <div style="overflow-x:auto">
-          <table class="vf-table" id="verifyGrid">
-            <thead id="verifyGridHead"></thead>
-            <tbody id="verifyGridBody"></tbody>
+        <!-- Recent Entries -->
+        <div class="fb-card">
+          <div class="fb-card-header">
+            <div class="fb-card-title"><i class="bi bi-clock-history"></i>Recent Entries</div>
+          </div>
+          <div id="dash-recent"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ IMPORT ============ -->
+    <div class="app-page" id="pg-import">
+      <div class="fb-card mb-3">
+        <div class="fb-card-header">
+          <div class="fb-card-title"><i class="bi bi-file-earmark-arrow-up"></i>Import Design CSV / XLSX</div>
+        </div>
+        <div class="fb-card-body">
+          <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-inp').click()">
+            <input type="file" id="file-inp" accept=".csv,.xlsx,.xls" class="d-none">
+            <div class="drop-zone-icon"><i class="bi bi-cloud-upload"></i></div>
+            <div class="drop-zone-text">Drop file here or tap to browse</div>
+            <div class="drop-zone-sub">Supports .csv, .xlsx, .xls</div>
+          </div>
+
+          <!-- Column Mapping -->
+          <div id="col-map-section" class="d-none" style="margin-top:1rem;">
+            <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:0.5rem;font-family:var(--font-data);text-transform:uppercase;letter-spacing:0.06em;">Column Mapping</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-bottom:0.75rem;">
+              <div>
+                <label class="fb-label">CHAIN / Chainage *</label>
+                <select class="fb-input fb-select" id="map-chain"></select>
+              </div>
+              <div>
+                <label class="fb-label">Left X-Fall</label>
+                <select class="fb-input fb-select" id="map-lxfall"></select>
+              </div>
+              <div>
+                <label class="fb-label">CL Design Level *</label>
+                <select class="fb-input fb-select" id="map-cl"></select>
+              </div>
+              <div>
+                <label class="fb-label">Right X-Fall</label>
+                <select class="fb-input fb-select" id="map-rxfall"></select>
+              </div>
+            </div>
+            <div style="display:flex;gap:0.5rem;">
+              <button class="btn-amber" id="btn-do-import"><i class="bi bi-check2 me-1"></i>Confirm Import</button>
+              <button class="btn-ghost" id="btn-cancel-import">Cancel</button>
+            </div>
+          </div>
+
+          <!-- Import Result -->
+          <div id="import-result" class="d-none" style="margin-top:0.75rem;"></div>
+        </div>
+      </div>
+
+      <!-- Format Guide -->
+      <div class="fb-card">
+        <div class="fb-card-header">
+          <div class="fb-card-title"><i class="bi bi-info-circle"></i>CSV Format Reference</div>
+        </div>
+        <div class="fb-card-body">
+          <div class="alert-fb info mb-2">
+            <i class="bi bi-lightbulb me-1"></i>X-Fall: |value| &gt; 1 = percent (−2 → −0.02); ≤ 1 = decimal slope already.
+          </div>
+          <div class="verify-wrap">
+            <table class="fb-table">
+              <thead>
+                <tr><th>Column</th><th>Type</th><th>Example</th><th>Notes</th></tr>
+              </thead>
+              <tbody>
+                <tr><td class="mono">CHAIN</td><td>Number</td><td class="mono">0, 25.5</td><td>Chainage / SV index</td></tr>
+                <tr><td class="mono">Left X-FALL</td><td>Number</td><td class="mono">-0.02 or -2</td><td>Decimal or percent</td></tr>
+                <tr><td class="mono">CENTRELINE DESIGN</td><td>Number</td><td class="mono">100.250</td><td>Elevation / RL</td></tr>
+                <tr><td class="mono">Right X-FALL</td><td>Number</td><td class="mono">-0.02 or -2</td><td>Decimal or percent</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ DESIGN TABLE ============ -->
+    <div class="app-page" id="pg-design-table">
+      <div class="fb-card">
+        <div class="fb-card-header">
+          <div class="fb-card-title"><i class="bi bi-table"></i>Design Points</div>
+          <span class="tag tag-amber" id="dt-count">0 pts</span>
+        </div>
+        <div style="padding:0.75rem 1rem;border-bottom:1px solid var(--border);display:flex;gap:0.5rem;align-items:center;">
+          <input type="number" id="dt-search" class="fb-input" placeholder="Search by CHAIN…" step="any" style="max-width:200px;">
+          <button class="btn-danger-ghost ms-auto" id="btn-clear-design"><i class="bi bi-trash me-1"></i>Clear All</button>
+        </div>
+        <div class="verify-wrap">
+          <table class="fb-table" id="dt-table">
+            <thead>
+              <tr><th>#</th><th>CHAIN</th><th>Left X-Fall</th><th>CL Level</th><th>Right X-Fall</th><th>Imported</th></tr>
+            </thead>
+            <tbody id="dt-body">
+              <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">No design points imported</td></tr>
+            </tbody>
           </table>
         </div>
+        <div class="fb-pagination" id="dt-pagination" style="display:none;"></div>
+      </div>
+    </div>
 
-        <!-- Notes -->
-        <div class="mt-3">
-          <label class="vf-label">Notes (optional)</label>
-          <input type="text" id="verifyNotes" class="vf-input" placeholder="Any observations...">
+    <!-- ============ VERIFY / CAPTURE ============ -->
+    <div class="app-page" id="pg-capture">
+
+      <!-- Index Lookup -->
+      <div class="fb-card mb-3">
+        <div class="fb-card-header">
+          <div class="fb-card-title"><i class="bi bi-search"></i>Index Lookup</div>
         </div>
+        <div class="fb-card-body">
+          <div style="display:flex;gap:0.5rem;align-items:flex-end;flex-wrap:wrap;">
+            <div style="flex:1;min-width:150px;">
+              <label class="fb-label">Index No (CHAIN / SV)</label>
+              <input type="number" id="idx-input" class="fb-input" placeholder="Enter chainage…" step="any" inputmode="decimal">
+            </div>
+            <div style="flex-shrink:0;padding-bottom:0.1rem;">
+              <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer;font-size:0.75rem;color:var(--text-dim);white-space:nowrap;">
+                <input type="checkbox" id="exact-toggle" class="form-check-input" style="margin:0;">
+                Exact only
+              </label>
+            </div>
+            <button class="btn-amber" id="btn-lookup" style="flex-shrink:0;">
+              <i class="bi bi-search me-1"></i>Lookup
+            </button>
+          </div>
 
-        <!-- Save -->
-        <div class="mt-3">
-          <button id="saveBtn" class="btn btn-amber w-100" disabled onclick="App.verify.save()">
-            <i class="bi bi-check-circle"></i> Save Verification
+          <!-- Lookup Result -->
+          <div id="lkp-result" style="display:none;margin-top:0.85rem;">
+            <div class="dp-card">
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:0.5rem;margin-bottom:0.5rem;">
+                <div>
+                  <div style="font-size:0.68rem;color:var(--text-muted);margin-bottom:0.1rem;font-family:var(--font-data);text-transform:uppercase;">Resolved Chain</div>
+                  <div class="dp-chain" id="r-chain">—</div>
+                </div>
+                <span class="dp-match-badge" id="r-match-type">exact</span>
+              </div>
+              <div class="dp-grid">
+                <div><div class="dp-label">Left X-Fall</div><div class="dp-value" id="r-lxfall">—</div></div>
+                <div><div class="dp-label">CL Level</div><div class="dp-value text-amber" id="r-cl">—</div></div>
+                <div><div class="dp-label">Right X-Fall</div><div class="dp-value" id="r-rxfall">—</div></div>
+              </div>
+            </div>
+          </div>
+          <div id="lkp-err" style="display:none;margin-top:0.5rem;" class="alert-fb warning"></div>
+        </div>
+      </div>
+
+      <!-- BM Section (shown when enabled in settings) -->
+      <div class="fb-card mb-3" id="bm-section" style="display:none!important;">
+        <div class="fb-card-header">
+          <div class="fb-card-title"><i class="bi bi-rulers"></i>BM Height / Collimation</div>
+        </div>
+        <div class="fb-card-body">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.5rem;">
+            <div>
+              <label class="fb-label">BM Height (RL)</label>
+              <input type="number" id="bm-ht" class="fb-input" step="0.001" placeholder="e.g. 100.000" inputmode="decimal">
+            </div>
+            <div>
+              <label class="fb-label">Staff on BM</label>
+              <input type="number" id="bm-st" class="fb-input" step="0.001" placeholder="e.g. 1.500" inputmode="decimal">
+            </div>
+          </div>
+          <div style="font-size:0.78rem;color:var(--text-muted);">
+            Collimation Height: <span class="text-amber text-mono" id="collim-val">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Verification Grid -->
+      <div class="fb-card">
+        <div class="fb-card-header">
+          <div class="fb-card-title"><i class="bi bi-list-ol"></i>Verification Points</div>
+          <div style="display:flex;align-items:center;gap:0.4rem;">
+            <span style="font-size:0.72rem;color:var(--text-muted);">Points:</span>
+            <select id="pt-count" class="fb-input fb-select" style="width:60px;padding:0.3rem 0.4rem!important;font-size:0.82rem!important;">
+              <option>1</option><option>2</option><option>3</option><option>4</option>
+              <option selected>5</option><option>6</option><option>7</option><option>8</option>
+            </select>
+          </div>
+        </div>
+        <div class="fb-card-body">
+          <div class="verify-wrap">
+            <table class="fb-table verify-table">
+              <thead>
+                <tr>
+                  <th style="width:70px;">Label</th>
+                  <th style="width:80px;">Profile%</th>
+                  <th style="width:100px;">Staff Rdg</th>
+                  <th style="width:100px;">Elevation</th>
+                  <th style="width:80px;" id="th-delta">Δ Design</th>
+                  <th>Comment</th>
+                </tr>
+              </thead>
+              <tbody id="vt-body"></tbody>
+            </table>
+          </div>
+          <div style="margin-top:0.75rem;">
+            <label class="fb-label">Entry Notes</label>
+            <textarea id="entry-notes" class="fb-input" rows="2" placeholder="Optional notes…" style="resize:vertical;"></textarea>
+          </div>
+        </div>
+        <div class="save-bar">
+          <button class="btn-ghost" id="btn-clear-cap" style="flex:1;"><i class="bi bi-x-circle me-1"></i>Clear</button>
+          <button class="btn-green" id="btn-save-cap" disabled style="flex:2;padding:0.65rem;font-size:0.88rem;">
+            <i class="bi bi-floppy me-1"></i>Save Entry
           </button>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- ===== AS-BUILT ===== -->
-  <div id="page-asbuilt" class="vf-page">
-    <h4 class="mb-3">As-Built Entries</h4>
-    <div class="vf-card">
-      <div class="d-flex gap-2 mb-3 flex-wrap align-items-center">
-        <input type="text" id="abSearch" class="vf-input" style="max-width:200px" placeholder="Search chain..." oninput="App.asbuilt.render()">
-        <span class="vf-badge amber" id="abCount">0 entries</span>
-        <div class="ms-auto d-flex gap-1">
-          <button class="btn btn-outline-amber btn-sm" onclick="App.export.csv()"><i class="bi bi-filetype-csv"></i> CSV</button>
-          <button class="btn btn-outline-amber btn-sm" onclick="App.export.xlsx()"><i class="bi bi-file-earmark-excel"></i> XLSX</button>
+    <!-- ============ SETTING OUT / STAKEOUT ============ -->
+    <div class="app-page" id="pg-stakeout">
+
+      <!-- Index Lookup (shared component) -->
+      <div class="fb-card mb-3">
+        <div class="fb-card-header">
+          <div class="fb-card-title"><i class="bi bi-search"></i>Index Lookup</div>
+        </div>
+        <div class="fb-card-body">
+          <div style="display:flex;gap:0.5rem;align-items:flex-end;flex-wrap:wrap;">
+            <div style="flex:1;min-width:150px;">
+              <label class="fb-label">SV / Chainage</label>
+              <input type="number" id="so-idx-input" class="fb-input" placeholder="Enter chainage…" step="any" inputmode="decimal">
+            </div>
+            <div style="flex-shrink:0;padding-bottom:0.1rem;">
+              <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer;font-size:0.75rem;color:var(--text-dim);white-space:nowrap;">
+                <input type="checkbox" id="so-exact-toggle" class="form-check-input" style="margin:0;">
+                Exact only
+              </label>
+            </div>
+            <button class="btn-amber" id="btn-so-lookup" style="flex-shrink:0;">
+              <i class="bi bi-search me-1"></i>Lookup
+            </button>
+          </div>
+
+          <!-- Lookup Result -->
+          <div id="so-lkp-result" style="display:none;margin-top:0.85rem;">
+            <div class="dp-card">
+              <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:0.75rem;margin-bottom:0.5rem;">
+                <div>
+                  <div style="font-size:0.68rem;color:var(--text-muted);margin-bottom:0.1rem;font-family:var(--font-data);text-transform:uppercase;">SV</div>
+                  <div class="dp-chain" id="so-r-chain">—</div>
+                </div>
+                <div>
+                  <div style="font-size:0.68rem;color:var(--text-muted);margin-bottom:0.1rem;font-family:var(--font-data);text-transform:uppercase;">CL Design Level</div>
+                  <div class="dp-chain text-amber" id="so-r-cl">—</div>
+                </div>
+              </div>
+              <div class="dp-grid">
+                <div><div class="dp-label">Left X-Fall</div><div class="dp-value" id="so-r-lxfall">—</div></div>
+                <div><div class="dp-label">Match</div><span class="dp-match-badge" id="so-r-match-type">exact</span></div>
+                <div><div class="dp-label">Right X-Fall</div><div class="dp-value" id="so-r-rxfall">—</div></div>
+              </div>
+            </div>
+          </div>
+          <div id="so-lkp-err" style="display:none;margin-top:0.5rem;" class="alert-fb warning"></div>
         </div>
       </div>
-      <div style="overflow-x:auto; max-height:60vh;">
-        <table class="vf-table">
-          <thead>
-            <tr><th>Date</th><th>User</th><th>Input</th><th>Chain</th><th>CL</th><th>Pts</th><th>Notes</th><th></th></tr>
-          </thead>
-          <tbody id="abTableBody"></tbody>
-        </table>
+
+      <!-- BM / Collimation -->
+      <div class="fb-card mb-3" id="so-bm-section">
+        <div class="fb-card-header">
+          <div class="fb-card-title"><i class="bi bi-rulers"></i>BM Height / Collimation</div>
+        </div>
+        <div class="fb-card-body">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.75rem;margin-bottom:0.5rem;">
+            <div>
+              <label class="fb-label">BM Height (RL)</label>
+              <input type="number" id="so-bm-ht" class="fb-input" step="0.001" placeholder="e.g. 1549.000" inputmode="decimal">
+            </div>
+            <div>
+              <label class="fb-label">Staff on BM</label>
+              <input type="number" id="so-bm-st" class="fb-input" step="0.001" placeholder="e.g. 2.300" inputmode="decimal">
+            </div>
+            <div>
+              <label class="fb-label">Collimation</label>
+              <input type="number" id="so-collim" class="fb-input mono" step="0.001" readonly style="background:var(--amber-glow)!important;color:var(--amber)!important;font-weight:500;">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Road Left / Right Nails -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.75rem;">
+        
+        <!-- Road Left -->
+        <div class="fb-card">
+          <div class="fb-card-header">
+            <div class="fb-card-title"><i class="bi bi-arrow-bar-left"></i>Road Left (−)</div>
+            <button class="btn-icon" id="btn-add-left" style="font-size:0.7rem;padding:0.25rem 0.4rem;">
+              <i class="bi bi-plus"></i>Add
+            </button>
+          </div>
+          <div class="fb-card-body" style="padding:0.5rem;">
+            <div class="verify-wrap">
+              <table class="fb-table verify-table">
+                <thead>
+                  <tr>
+                    <th style="width:50px;">Nail</th>
+                    <th style="width:70px;">Travel</th>
+                    <th style="width:70px;">Offset</th>
+                    <th style="width:70px;">X-Fall%</th>
+                    <th style="width:85px;">Design</th>
+                    <th style="width:85px;">Staff</th>
+                    <th style="width:30px;"></th>
+                  </tr>
+                </thead>
+                <tbody id="so-left-body">
+                  <tr><td colspan="7" style="text-align:center;padding:1rem;color:var(--text-muted);font-size:0.75rem;">Add nails using + button</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Road Right -->
+        <div class="fb-card">
+          <div class="fb-card-header">
+            <div class="fb-card-title"><i class="bi bi-arrow-bar-right"></i>Road Right (+)</div>
+            <button class="btn-icon" id="btn-add-right" style="font-size:0.7rem;padding:0.25rem 0.4rem;">
+              <i class="bi bi-plus"></i>Add
+            </button>
+          </div>
+          <div class="fb-card-body" style="padding:0.5rem;">
+            <div class="verify-wrap">
+              <table class="fb-table verify-table">
+                <thead>
+                  <tr>
+                    <th style="width:50px;">Nail</th>
+                    <th style="width:70px;">Travel</th>
+                    <th style="width:70px;">Offset</th>
+                    <th style="width:70px;">X-Fall%</th>
+                    <th style="width:85px;">Design</th>
+                    <th style="width:85px;">Staff</th>
+                    <th style="width:30px;"></th>
+                  </tr>
+                </thead>
+                <tbody id="so-right-body">
+                  <tr><td colspan="7" style="text-align:center;padding:1rem;color:var(--text-muted);font-size:0.75rem;">Add nails using + button</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notes & Save -->
+      <div class="fb-card">
+        <div class="fb-card-body">
+          <label class="fb-label">Notes</label>
+          <textarea id="so-notes" class="fb-input" rows="2" placeholder="Optional notes for this stakeout…" style="resize:vertical;"></textarea>
+        </div>
+        <div class="save-bar">
+          <button class="btn-ghost" id="btn-clear-so" style="flex:1;"><i class="bi bi-x-circle me-1"></i>Clear All</button>
+          <button class="btn-green" id="btn-save-so" disabled style="flex:2;padding:0.65rem;font-size:0.88rem;">
+            <i class="bi bi-floppy me-1"></i>Save Stakeout
+          </button>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- ===== SETTINGS ===== -->
-  <div id="page-settings" class="vf-page">
-    <h4 class="mb-3">Settings</h4>
-    <div class="vf-card">
-      <h6 class="text-amber mb-3">Session</h6>
-      <div class="mb-3">
-        <label class="vf-label">Inactivity Timeout (minutes)</label>
-        <input type="number" id="setTimeout" class="vf-input" style="max-width:120px" value="30" min="5" max="480">
+    <!-- ============ AS-BUILT TABLE ============ -->
+    <div class="app-page" id="pg-asbuilt">
+      <!-- Filters -->
+      <div class="fb-card mb-3">
+        <div class="fb-card-header">
+          <div class="fb-card-title"><i class="bi bi-funnel"></i>Filters</div>
+        </div>
+        <div class="fb-card-body">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-bottom:0.5rem;">
+            <div><label class="fb-label">From Date</label><input type="date" id="f-date-from" class="fb-input"></div>
+            <div><label class="fb-label">To Date</label><input type="date" id="f-date-to" class="fb-input"></div>
+            <div><label class="fb-label">Chain From</label><input type="number" id="f-ch-from" class="fb-input" step="any"></div>
+            <div><label class="fb-label">Chain To</label><input type="number" id="f-ch-to" class="fb-input" step="any"></div>
+          </div>
+          <div style="display:flex;gap:0.4rem;">
+            <button class="btn-amber" id="btn-filt-apply"><i class="bi bi-funnel me-1"></i>Apply</button>
+            <button class="btn-ghost" id="btn-filt-clear">Clear</button>
+          </div>
+        </div>
       </div>
-      <div class="mb-3">
-        <label class="vf-label">Change Password</label>
-        <input type="password" id="setNewPass" class="vf-input" placeholder="New password">
-        <button class="btn btn-outline-amber btn-sm mt-2" onclick="App.settings.changePassword()">Update Password</button>
-      </div>
-    </div>
 
-    <div class="vf-card">
-      <h6 class="text-amber mb-3">Verification Defaults</h6>
-      <div class="form-check form-switch mb-3">
-        <input class="form-check-input" type="checkbox" id="setBMEnabled">
-        <label class="form-check-label small" for="setBMEnabled">Enable BM Height / Staff auto-calc</label>
-      </div>
-      <div class="mb-3">
-        <label class="vf-label">Default Match Mode</label>
-        <select id="setMatchMode" class="vf-input" style="max-width:200px">
-          <option value="approximate">Approximate (closest <=)</option>
-          <option value="exact">Exact only</option>
-        </select>
-      </div>
-      <div class="mb-3">
-        <label class="vf-label">Default Profile (comma-separated % from left to right)</label>
-        <input type="text" id="setProfile" class="vf-input" value="-10, -5, 0, -5, -10" placeholder="-10, -5, 0, -5, -10">
-        <div class="text-dim small mt-1">Example for 5 points: -10, -5, 0, -5, -10</div>
-      </div>
-    </div>
-
-    <div class="vf-card">
-      <h6 class="text-amber mb-3">Data Management</h6>
-      <div class="d-flex gap-2 flex-wrap">
-        <button class="btn btn-outline-amber btn-sm" onclick="App.settings.exportAllData()"><i class="bi bi-download"></i> Export All Data (JSON)</button>
-        <button class="btn btn-sm" style="border:1px solid var(--vf-red);color:var(--vf-red)" onclick="App.settings.clearAllData()"><i class="bi bi-trash"></i> Clear All Data</button>
+      <div class="fb-card">
+        <div class="fb-card-header">
+          <div class="fb-card-title"><i class="bi bi-archive"></i>As-Built Entries</div>
+          <span class="tag tag-sky" id="ab-count">0</span>
+        </div>
+        <div class="verify-wrap">
+          <table class="fb-table">
+            <thead>
+              <tr><th>Date/Time</th><th>User</th><th>Input Idx</th><th>Chain</th><th>Pts</th><th>Notes</th><th></th></tr>
+            </thead>
+            <tbody id="ab-body">
+              <tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted);">No entries found</td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
 
-    <div class="vf-card">
-      <button class="btn btn-amber w-100" onclick="App.settings.save()"><i class="bi bi-check-circle"></i> Save Settings</button>
+    <!-- ============ EXPORT ============ -->
+    <div class="app-page" id="pg-export">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.75rem;">
+
+        <div class="export-card">
+          <div class="export-card-icon text-amber"><i class="bi bi-file-earmark-spreadsheet"></i></div>
+          <div>
+            <div class="export-card-title">Entries (Wide)</div>
+            <div class="export-card-desc">One row per entry with P1–P8 columns for all point data.</div>
+          </div>
+          <div style="display:flex;gap:0.4rem;margin-top:auto;">
+            <button class="btn-outline-amber" id="btn-ew-csv" style="flex:1;"><i class="bi bi-filetype-csv me-1"></i>CSV</button>
+            <button class="btn-amber" id="btn-ew-xlsx" style="flex:1;"><i class="bi bi-file-earmark-excel me-1"></i>XLSX</button>
+          </div>
+        </div>
+
+        <div class="export-card">
+          <div class="export-card-icon" style="color:var(--green);"><i class="bi bi-file-earmark-text"></i></div>
+          <div>
+            <div class="export-card-title">Points (Long)</div>
+            <div class="export-card-desc">One row per verification point. Ideal for analysis.</div>
+          </div>
+          <div style="display:flex;gap:0.4rem;margin-top:auto;">
+            <button class="btn-ghost" id="btn-pl-csv" style="flex:1;"><i class="bi bi-filetype-csv me-1"></i>CSV</button>
+            <button class="btn-ghost" id="btn-pl-xlsx" style="flex:1;"><i class="bi bi-file-earmark-excel me-1"></i>XLSX</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="export-card" style="background:var(--amber-glow);border-color:var(--border-lit);">
+        <div style="display:flex;align-items:center;gap:1rem;">
+          <div class="export-card-icon text-amber"><i class="bi bi-grid-3x3-gap"></i></div>
+          <div>
+            <div class="export-card-title">Cross-Section Matrix</div>
+            <div class="export-card-desc">Field-grade format: chainages as rows, positions as columns, with Actual/Design/Diff sub-columns.</div>
+          </div>
+        </div>
+        <button class="btn-amber" id="btn-matrix-xlsx" style="margin-top:0.25rem;">
+          <i class="bi bi-file-earmark-excel me-2"></i>Export Matrix (.xlsx)
+        </button>
+      </div>
+
+      <div class="export-card" style="background:var(--green-dim);border-color:rgba(16,185,129,0.3);">
+        <div style="display:flex;align-items:center;gap:1rem;">
+          <div class="export-card-icon" style="color:var(--green);"><i class="bi bi-geo-alt"></i></div>
+          <div>
+            <div class="export-card-title">Setting Out / Stakeout</div>
+            <div class="export-card-desc">One row per nail with SV, side, offset, design elevation, and staff reading.</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:0.4rem;margin-top:0.25rem;">
+          <button class="btn-ghost" id="btn-so-csv" style="flex:1;"><i class="bi bi-filetype-csv me-1"></i>CSV</button>
+          <button class="btn-green" id="btn-so-xlsx" style="flex:1;"><i class="bi bi-file-earmark-excel me-1"></i>XLSX</button>
+        </div>
+      </div>
+
+      <div class="export-card">
+        <div style="display:flex;align-items:center;gap:1rem;">
+          <div class="export-card-icon" style="color:var(--sky);"><i class="bi bi-archive"></i></div>
+          <div>
+            <div class="export-card-title">Full Workbook Export</div>
+            <div class="export-card-desc">Download one Excel file with all formats: Matrix, Stakeout, Entries_Wide, and Points_Long sheets.</div>
+          </div>
+        </div>
+        <button class="btn-amber" id="btn-full-xlsx" style="margin-top:0.25rem;">
+          <i class="bi bi-file-earmark-excel me-2"></i>Export Full Workbook (.xlsx)
+        </button>
+      </div>
     </div>
-  </div>
 
-</div><!-- /appShell -->
+    <!-- ============ SETTINGS ============ -->
+    <div class="app-page" id="pg-settings">
+      <div style="display:grid;grid-template-columns:1fr;gap:0.75rem;">
 
-<!-- ===== CONFIRM MODAL ===== -->
-<div class="modal fade" id="confirmModal" tabindex="-1">
+        <!-- Session -->
+        <div class="fb-card">
+          <div class="fb-card-header"><div class="fb-card-title"><i class="bi bi-clock"></i>Session</div></div>
+          <div class="fb-card-body">
+            <label class="fb-label">Inactivity Timeout (minutes)</label>
+            <input type="number" id="s-timeout" class="fb-input" value="30" min="5" max="480" style="max-width:120px;">
+            <div style="font-size:0.72rem;color:var(--text-muted);margin-top:0.35rem;">Auto-logout after inactivity.</div>
+          </div>
+        </div>
+
+        <!-- BM / Collimation -->
+        <div class="fb-card">
+          <div class="fb-card-header"><div class="fb-card-title"><i class="bi bi-rulers"></i>BM Height / Collimation</div></div>
+          <div class="fb-card-body">
+            <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem;">
+              <input type="checkbox" id="s-use-bm" class="form-check-input" style="margin:0;">
+              <label for="s-use-bm" style="font-size:0.82rem;color:var(--text-dim);cursor:pointer;">Enable BM Height / Staff auto-calc elevation</label>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;" id="bm-fields">
+              <div><label class="fb-label">Default BM Height</label><input type="number" id="s-bm-ht" class="fb-input" step="0.001" placeholder="Optional"></div>
+              <div><label class="fb-label">Default Staff on BM</label><input type="number" id="s-bm-st" class="fb-input" step="0.001" placeholder="Optional"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Profile -->
+        <div class="fb-card">
+          <div class="fb-card-header"><div class="fb-card-title"><i class="bi bi-bar-chart"></i>Verification Profile</div></div>
+          <div class="fb-card-body">
+            <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:0.75rem;">Default cross-fall percentages for the verification profile template.</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.5rem;">
+              <div><label class="fb-label">Left X-Fall (%)</label><input type="number" id="s-prof-l" class="fb-input" value="-10" step="0.1"></div>
+              <div><label class="fb-label">Right X-Fall (%)</label><input type="number" id="s-prof-r" class="fb-input" value="-10" step="0.1"></div>
+              <div>
+                <label class="fb-label">Default Match Mode</label>
+                <select id="s-match" class="fb-input fb-select">
+                  <option value="closest">Closest ≤</option>
+                  <option value="exact">Exact Only</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="fb-card">
+          <div class="fb-card-header"><div class="fb-card-title"><i class="bi bi-key"></i>Change Password</div></div>
+          <div class="fb-card-body">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-bottom:0.75rem;">
+              <div><label class="fb-label">Current Password</label><input type="password" id="s-cur-pw" class="fb-input"></div>
+              <div><label class="fb-label">New Password</label><input type="password" id="s-new-pw" class="fb-input"></div>
+              <div><label class="fb-label">Confirm New</label><input type="password" id="s-conf-pw" class="fb-input"></div>
+            </div>
+            <button class="btn-outline-amber" id="btn-chg-pw"><i class="bi bi-key me-1"></i>Update Password</button>
+            <div id="pw-msg" style="display:none;margin-top:0.5rem;" class="alert-fb"></div>
+          </div>
+        </div>
+
+        <!-- Data Management -->
+        <div class="fb-card">
+          <div class="fb-card-header"><div class="fb-card-title"><i class="bi bi-database"></i>Data Management</div></div>
+          <div class="fb-card-body">
+            <div id="s-db-stats" style="font-size:0.78rem;color:var(--text-muted);font-family:var(--font-data);margin-bottom:0.75rem;"></div>
+            <button class="btn-danger-ghost" id="btn-clear-all"><i class="bi bi-trash me-1"></i>Clear All Data</button>
+          </div>
+        </div>
+
+        <button class="btn-amber" id="btn-save-settings" style="padding:0.75rem;font-size:0.9rem;">
+          <i class="bi bi-floppy me-2"></i>Save Settings
+        </button>
+      </div>
+    </div>
+
+  </div><!-- /main-content -->
+</div><!-- /app-shell -->
+
+<!-- ============================================================
+     MODALS
+     ============================================================ -->
+
+<!-- Save Confirmation Modal -->
+<div class="modal fade" id="modal-save" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title text-amber" id="confirmTitle">Confirm</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        <h5 class="modal-title"><i class="bi bi-floppy me-2 text-amber"></i>Confirm Save</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
       </div>
-      <div class="modal-body" id="confirmBody"></div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-outline-amber" data-bs-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-amber" id="confirmOk">Confirm</button>
+      <div class="modal-body">
+        <p style="font-size:0.82rem;color:var(--text-muted);">Save these readings for this chain?</p>
+        <div id="save-preview"></div>
+      </div>
+      <div class="modal-footer" style="gap:0.5rem;">
+        <button class="btn-ghost" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn-green" id="btn-confirm-save"><i class="bi bi-check2 me-1"></i>Yes, Save</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ===== DETAIL MODAL ===== -->
-<div class="modal fade" id="detailModal" tabindex="-1">
-  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+<!-- Entry Detail Modal -->
+<div class="modal fade" id="modal-entry" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title text-amber" id="detailTitle">Entry Detail</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        <h5 class="modal-title"><i class="bi bi-eye me-2 text-amber"></i>Entry Detail</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
       </div>
-      <div class="modal-body" id="detailBody"></div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-outline-amber" data-bs-dismiss="modal">Close</button>
+      <div class="modal-body" id="entry-detail-body"></div>
+      <div class="modal-footer" style="gap:0.5rem;">
+        <button class="btn-danger-ghost" id="btn-del-entry"><i class="bi bi-trash me-1"></i>Delete</button>
+        <button class="btn-ghost" data-bs-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ===== SCRIPTS ===== -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Toast -->
+<div class="fb-toast-wrap">
+  <div class="fb-toast" id="fb-toast">
+    <span class="toast-icon" id="toast-icon"></span>
+    <span id="toast-msg"></span>
+  </div>
+</div>
+
+<!-- ============================================================
+     CDN LIBRARIES
+     ============================================================ -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dexie@3.2.4/dist/dexie.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+
+<style>
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+
 <script>
-/* ========================================================
-   VERIFICATION FIELDBOOK - COMPLETE APPLICATION
-   ======================================================== */
-const App = {};
+/* ============================================================
+   FIELDBOOK — APPLICATION ENGINE
+   Version 1.0.0
+   ============================================================ */
+'use strict';
 
-// ---- UTILITIES ----
-const U = {
-  uuid: () => crypto.randomUUID ? crypto.randomUUID() : 'xxxx-xxxx-xxxx'.replace(/x/g, () => ((Math.random()*16)|0).toString(16)),
-  now: () => new Date().toISOString(),
-  fmt: (n, d=4) => n != null ? Number(n).toFixed(d) : '--',
-  fmtShort: (n, d=2) => n != null ? Number(n).toFixed(d) : '--',
-  fmtDate: (iso) => {
-    if (!iso) return '--';
-    const d = new Date(iso);
-    return d.toLocaleDateString('en-ZA') + ' ' + d.toLocaleTimeString('en-ZA', {hour:'2-digit', minute:'2-digit'});
-  },
-  normalizeXfall(v) {
-    const n = parseFloat(v);
-    if (isNaN(n)) return null;
-    return Math.abs(n) > 1 ? n / 100 : n;
-  },
-  xfallDisplay(v) {
-    if (v == null) return '--';
-    return (v * 100).toFixed(2) + '%';
+// ============================================================
+// MODULE 1: DATABASE
+// ============================================================
+const db = new Dexie('FieldbookDB_v1');
+db.version(1).stores({
+  design_points:  '++id, chain, import_batch_id, imported_at',
+  asbuilt_entries:'++id, created_at, user, resolved_chain',
+  asbuilt_points: '++id, entry_id, seq',
+  stakeout_entries:'++id, created_at, user, resolved_chain',
+  stakeout_nails:  '++id, entry_id, seq'
+});
+
+// ============================================================
+// MODULE 2: UTILITIES
+// ============================================================
+function uuid() {
+  return crypto.randomUUID ? crypto.randomUUID()
+    : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+        const r = Math.random()*16|0;
+        return (c==='x' ? r : (r&0x3|0x8)).toString(16);
+      });
+}
+
+function fmt(v, d=3) {
+  if (v===null||v===undefined||v==='') return '—';
+  const n=parseFloat(v);
+  return isNaN(n)?'—':n.toFixed(d);
+}
+
+function fmtPct(v) {
+  if (v===null||v===undefined) return '—';
+  return (parseFloat(v)*100).toFixed(2)+'%';
+}
+
+function normalizeXfall(v) {
+  const n=parseFloat(v);
+  if (isNaN(n)) return null;
+  return Math.abs(n)>1 ? n/100 : n;
+}
+
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// Toast
+let _toastTimer=null;
+function toast(msg, type='success') {
+  const t=document.getElementById('fb-toast');
+  const m=document.getElementById('toast-msg');
+  const ic=document.getElementById('toast-icon');
+  m.textContent=msg;
+  const icons={success:'bi-check-circle-fill',warning:'bi-exclamation-triangle-fill',danger:'bi-x-circle-fill',info:'bi-info-circle-fill'};
+  ic.className=`bi ${icons[type]||icons.success}`;
+  t.className=`fb-toast toast-${type} show`;
+  clearTimeout(_toastTimer);
+  _toastTimer=setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+// ============================================================
+// MODULE 3: AUTH
+// ============================================================
+const Auth = (() => {
+  const SALT='fb_salt', HASH='fb_hash', USER='fb_user', SES='fb_ses', EXP='fb_exp';
+  let _timer=null;
+
+  async function _hash(pw, salt) {
+    const enc=new TextEncoder();
+    const key=await crypto.subtle.importKey('raw',enc.encode(pw),{name:'PBKDF2'},false,['deriveBits']);
+    const bits=await crypto.subtle.deriveBits({name:'PBKDF2',salt:enc.encode(salt),iterations:100000,hash:'SHA-256'},key,256);
+    return Array.from(new Uint8Array(bits)).map(b=>b.toString(16).padStart(2,'0')).join('');
   }
-};
 
-// ---- INDEXEDDB ----
-const DB = {
-  db: null,
-  DB_NAME: 'VFieldbook',
-  DB_VERSION: 1,
-  open() {
-    return new Promise((resolve, reject) => {
-      const req = indexedDB.open(this.DB_NAME, this.DB_VERSION);
-      req.onupgradeneeded = (e) => {
-        const db = e.target.result;
-        if (!db.objectStoreNames.contains('users')) {
-          db.createObjectStore('users', { keyPath: 'username' });
-        }
-        if (!db.objectStoreNames.contains('design_points')) {
-          const dp = db.createObjectStore('design_points', { keyPath: 'id' });
-          dp.createIndex('chain', 'chain', { unique: false });
-          dp.createIndex('import_batch_id', 'import_batch_id', { unique: false });
-        }
-        if (!db.objectStoreNames.contains('asbuilt_entries')) {
-          const ae = db.createObjectStore('asbuilt_entries', { keyPath: 'id' });
-          ae.createIndex('resolved_chain', 'resolved_chain', { unique: false });
-          ae.createIndex('created_at', 'created_at', { unique: false });
-        }
-        if (!db.objectStoreNames.contains('asbuilt_points')) {
-          const ap = db.createObjectStore('asbuilt_points', { keyPath: 'id' });
-          ap.createIndex('entry_id', 'entry_id', { unique: false });
-        }
-        if (!db.objectStoreNames.contains('settings')) {
-          db.createObjectStore('settings', { keyPath: 'key' });
-        }
-      };
-      req.onsuccess = (e) => { this.db = e.target.result; resolve(this.db); };
-      req.onerror = (e) => reject(e.target.error);
-    });
-  },
-  tx(stores, mode='readonly') {
-    const t = this.db.transaction(stores, mode);
-    return stores.length === 1 ? t.objectStore(stores[0]) : stores.map(s => t.objectStore(s));
-  },
-  getAll(store) {
-    return new Promise((res, rej) => {
-      const r = this.tx([store]).getAll();
-      r.onsuccess = () => res(r.result);
-      r.onerror = () => rej(r.error);
-    });
-  },
-  get(store, key) {
-    return new Promise((res, rej) => {
-      const r = this.tx([store]).get(key);
-      r.onsuccess = () => res(r.result);
-      r.onerror = () => rej(r.error);
-    });
-  },
-  put(store, data) {
-    return new Promise((res, rej) => {
-      const r = this.tx([store], 'readwrite').put(data);
-      r.onsuccess = () => res(r.result);
-      r.onerror = () => rej(r.error);
-    });
-  },
-  putBulk(store, items) {
-    return new Promise((res, rej) => {
-      const s = this.tx([store], 'readwrite');
-      items.forEach(item => s.put(item));
-      s.transaction.oncomplete = () => res();
-      s.transaction.onerror = () => rej(s.transaction.error);
-    });
-  },
-  del(store, key) {
-    return new Promise((res, rej) => {
-      const r = this.tx([store], 'readwrite').delete(key);
-      r.onsuccess = () => res();
-      r.onerror = () => rej(r.error);
-    });
-  },
-  clearStore(store) {
-    return new Promise((res, rej) => {
-      const r = this.tx([store], 'readwrite').clear();
-      r.onsuccess = () => res();
-      r.onerror = () => rej(r.error);
-    });
-  },
-  getByIndex(store, indexName, value) {
-    return new Promise((res, rej) => {
-      const idx = this.tx([store]).index(indexName);
-      const r = idx.getAll(value);
-      r.onsuccess = () => res(r.result);
-      r.onerror = () => rej(r.error);
-    });
-  }
-};
-
-// ---- CRYPTO (PBKDF2) ----
-const Crypto = {
-  async deriveKey(password, salt) {
-    const enc = new TextEncoder();
-    const keyMaterial = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveBits']);
-    const bits = await crypto.subtle.deriveBits(
-      { name: 'PBKDF2', salt: salt, iterations: 100000, hash: 'SHA-256' },
-      keyMaterial, 256
-    );
-    return new Uint8Array(bits);
-  },
-  async hashPassword(password) {
-    const salt = crypto.getRandomValues(new Uint8Array(16));
-    const hash = await this.deriveKey(password, salt);
-    return {
-      salt: Array.from(salt).map(b => b.toString(16).padStart(2,'0')).join(''),
-      hash: Array.from(hash).map(b => b.toString(16).padStart(2,'0')).join('')
-    };
-  },
-  async verifyPassword(password, saltHex, hashHex) {
-    const salt = new Uint8Array(saltHex.match(/.{2}/g).map(h => parseInt(h, 16)));
-    const hash = await this.deriveKey(password, salt);
-    const computed = Array.from(hash).map(b => b.toString(16).padStart(2,'0')).join('');
-    return computed === hashHex;
-  }
-};
-
-// ---- AUTH ----
-App.auth = {
-  currentUser: null,
-  sessionTimer: null,
-
-  async init() {
-    const user = await DB.get('users', 'admin');
-    if (!user) {
-      const { salt, hash } = await Crypto.hashPassword('fieldbook');
-      await DB.put('users', { username: 'admin', salt, hash, created: U.now() });
+  async function init() {
+    if (!localStorage.getItem(HASH)) {
+      const salt=uuid();
+      const hash=await _hash('fieldbook2024',salt);
+      localStorage.setItem(SALT,salt);
+      localStorage.setItem(HASH,hash);
+      localStorage.setItem(USER,'admin');
     }
-    const session = sessionStorage.getItem('vf_session');
-    if (session) {
-      try {
-        const s = JSON.parse(session);
-        if (Date.now() - s.lastActivity < (await App.settings.getTimeout()) * 60000) {
-          this.currentUser = s.username;
-          this.startSession();
-          return true;
-        }
-      } catch(e) {}
-    }
-    return false;
-  },
-
-  async login() {
-    const username = document.getElementById('loginUser').value.trim();
-    const password = document.getElementById('loginPass').value;
-    const errEl = document.getElementById('loginError');
-    if (!username || !password) { errEl.textContent = 'Enter username and password.'; errEl.style.display = 'block'; return; }
-
-    const user = await DB.get('users', username);
-    if (!user) { errEl.textContent = 'Invalid credentials.'; errEl.style.display = 'block'; return; }
-
-    const valid = await Crypto.verifyPassword(password, user.salt, user.hash);
-    if (!valid) { errEl.textContent = 'Invalid credentials.'; errEl.style.display = 'block'; return; }
-
-    this.currentUser = username;
-    errEl.style.display = 'none';
-    this.startSession();
-    App.showApp();
-    toast('Signed in successfully.', 'success');
-  },
-
-  startSession() {
-    sessionStorage.setItem('vf_session', JSON.stringify({ username: this.currentUser, lastActivity: Date.now() }));
-    this.resetTimer();
-    document.addEventListener('click', () => this.touch());
-    document.addEventListener('keydown', () => this.touch());
-  },
-
-  touch() {
-    const s = sessionStorage.getItem('vf_session');
-    if (s) {
-      const p = JSON.parse(s);
-      p.lastActivity = Date.now();
-      sessionStorage.setItem('vf_session', JSON.stringify(p));
-      this.resetTimer();
-    }
-  },
-
-  async resetTimer() {
-    clearTimeout(this.sessionTimer);
-    const timeout = await App.settings.getTimeout();
-    this.sessionTimer = setTimeout(() => this.logout(), timeout * 60000);
-  },
-
-  logout() {
-    sessionStorage.removeItem('vf_session');
-    this.currentUser = null;
-    clearTimeout(this.sessionTimer);
-    document.getElementById('appShell').style.display = 'none';
-    document.getElementById('loginPage').style.display = 'flex';
-    document.getElementById('loginPass').value = '';
   }
-};
 
-// ---- SETTINGS ----
-App.settings = {
-  cache: null,
-
-  async load() {
-    const all = await DB.getAll('settings');
-    this.cache = {};
-    all.forEach(s => this.cache[s.key] = s.value);
-  },
-
-  async get(key, def) {
-    if (!this.cache) await this.load();
-    return this.cache[key] !== undefined ? this.cache[key] : def;
-  },
-
-  async set(key, value) {
-    await DB.put('settings', { key, value });
-    if (!this.cache) this.cache = {};
-    this.cache[key] = value;
-  },
-
-  async getTimeout() { return await this.get('session_timeout', 30); },
-
-  async populate() {
-    document.getElementById('setTimeout').value = await this.get('session_timeout', 30);
-    document.getElementById('setBMEnabled').checked = await this.get('bm_enabled', false);
-    document.getElementById('setMatchMode').value = await this.get('match_mode', 'approximate');
-    document.getElementById('setProfile').value = await this.get('default_profile', '-10, -5, 0, -5, -10');
-  },
-
-  async save() {
-    await this.set('session_timeout', parseInt(document.getElementById('setTimeout').value) || 30);
-    await this.set('bm_enabled', document.getElementById('setBMEnabled').checked);
-    await this.set('match_mode', document.getElementById('setMatchMode').value);
-    await this.set('default_profile', document.getElementById('setProfile').value);
-    this.cache = null;
-    toast('Settings saved.', 'success');
-  },
-
-  async changePassword() {
-    const newPass = document.getElementById('setNewPass').value;
-    if (!newPass || newPass.length < 4) { toast('Password must be at least 4 characters.', 'error'); return; }
-    const { salt, hash } = await Crypto.hashPassword(newPass);
-    const user = await DB.get('users', App.auth.currentUser);
-    user.salt = salt; user.hash = hash;
-    await DB.put('users', user);
-    document.getElementById('setNewPass').value = '';
-    toast('Password updated.', 'success');
-  },
-
-  async exportAllData() {
-    const data = {
-      design_points: await DB.getAll('design_points'),
-      asbuilt_entries: await DB.getAll('asbuilt_entries'),
-      asbuilt_points: await DB.getAll('asbuilt_points'),
-      settings: await DB.getAll('settings'),
-      exported_at: U.now()
-    };
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    downloadBlob(blob, `VFieldbook_Backup_${new Date().toISOString().slice(0,10)}.json`);
-    toast('Data exported.', 'success');
-  },
-
-  async clearAllData() {
-    showConfirm('Clear ALL Data?', 'This will permanently delete all design points and as-built entries. This cannot be undone.', async () => {
-      await DB.clearStore('design_points');
-      await DB.clearStore('asbuilt_entries');
-      await DB.clearStore('asbuilt_points');
-      App.dashboard.refresh();
-      toast('All data cleared.', 'info');
-    });
+  function _getTimeout() {
+    try { return (JSON.parse(localStorage.getItem('fb_settings')||'{}').timeout||30); }
+    catch { return 30; }
   }
-};
 
-// ---- NAVIGATION ----
-App.nav = function(page) {
-  document.querySelectorAll('.vf-page').forEach(p => p.classList.remove('active'));
-  document.getElementById('page-' + page).classList.add('active');
-  document.querySelectorAll('[data-page]').forEach(el => {
-    el.classList.toggle('active', el.dataset.page === page);
+  function _resetTimer(mins) {
+    clearTimeout(_timer);
+    _timer=setTimeout(()=>{
+      logout();
+      App.go('login');
+      toast('Session expired due to inactivity','warning');
+    }, mins*60000);
+  }
+
+  function _touch() {
+    const t=_getTimeout();
+    localStorage.setItem(EXP, Date.now()+t*60000);
+    _resetTimer(t);
+  }
+
+  async function login(user, pw) {
+    if (user!==localStorage.getItem(USER)) return false;
+    const salt=localStorage.getItem(SALT);
+    const stored=localStorage.getItem(HASH);
+    if (!salt||!stored) return false;
+    const h=await _hash(pw,salt);
+    if (h!==stored) return false;
+    localStorage.setItem(SES,uuid());
+    _touch();
+    return true;
+  }
+
+  function check() {
+    const s=localStorage.getItem(SES);
+    const e=parseInt(localStorage.getItem(EXP)||'0');
+    return !!(s && Date.now()<e);
+  }
+
+  function logout() {
+    localStorage.removeItem(SES);
+    localStorage.removeItem(EXP);
+    clearTimeout(_timer);
+  }
+
+  function getUser() { return localStorage.getItem(USER)||'admin'; }
+
+  async function changePw(cur, nw) {
+    const salt=localStorage.getItem(SALT);
+    const stored=localStorage.getItem(HASH);
+    if ((await _hash(cur,salt))!==stored) throw new Error('Current password incorrect');
+    const ns=uuid();
+    const nh=await _hash(nw,ns);
+    localStorage.setItem(SALT,ns);
+    localStorage.setItem(HASH,nh);
+  }
+
+  ['click','keypress','touchstart','scroll'].forEach(ev=>{
+    document.addEventListener(ev,()=>{ if(check()) _touch(); },{passive:true});
   });
-  // Refresh page data
-  if (page === 'dashboard') App.dashboard.refresh();
-  if (page === 'design') App.design.render();
-  if (page === 'asbuilt') App.asbuilt.render();
-  if (page === 'settings') App.settings.populate();
-  if (page === 'verify') App.verify.checkBM();
-};
 
-// ---- DASHBOARD ----
-App.dashboard = {
-  async refresh() {
-    const dp = await DB.getAll('design_points');
-    const ae = await DB.getAll('asbuilt_entries');
+  return { init, login, check, logout, getUser, changePw };
+})();
 
-    document.getElementById('statDesign').textContent = dp.length;
-    document.getElementById('statEntries').textContent = ae.length;
-    document.getElementById('statUser').textContent = App.auth.currentUser || '--';
+// ============================================================
+// MODULE 4: SETTINGS
+// ============================================================
+const Cfg = (() => {
+  const K='fb_settings';
+  const D={ timeout:30, useBM:false, bmHeight:null, bmStaff:null, profLeft:-10, profRight:-10, matchMode:'closest' };
+  function get() { try { return {...D,...JSON.parse(localStorage.getItem(K)||'{}')}; } catch { return {...D}; } }
+  function save(s) { localStorage.setItem(K,JSON.stringify({...get(),...s})); }
+  return { get, save };
+})();
 
-    if (dp.length > 0) {
-      const chains = dp.map(p => p.chain).sort((a,b) => a - b);
-      document.getElementById('statChainRange').textContent = U.fmtShort(chains[0], 1) + '-' + U.fmtShort(chains[chains.length-1], 1);
-    } else {
-      document.getElementById('statChainRange').textContent = '--';
-    }
+// ============================================================
+// MODULE 5: IMPORTER
+// ============================================================
+const Importer = (() => {
+  let _data=null, _hdrs=[];
 
-    // Recent entries
-    const recent = ae.sort((a,b) => b.created_at.localeCompare(a.created_at)).slice(0, 5);
-    const el = document.getElementById('dashRecent');
-    if (recent.length === 0) {
-      el.innerHTML = '<span class="text-dim">No entries yet. Start by importing a design CSV.</span>';
-    } else {
-      el.innerHTML = recent.map(e => `
-        <div class="d-flex justify-content-between align-items-center py-1 border-bottom" style="border-color:var(--vf-border)!important">
-          <div>
-            <span class="mono text-amber">${U.fmtShort(e.resolved_chain,1)}</span>
-            <span class="text-dim small ms-2">${e.point_count} pts</span>
-          </div>
-          <span class="text-dim small">${U.fmtDate(e.created_at)}</span>
-        </div>
-      `).join('');
-    }
-  }
-};
-
-// ---- IMPORT ----
-App.import = {
-  parsedData: null,
-  headers: null,
-
-  fileSelected(input) {
-    const file = input.files[0];
-    if (!file) return;
-    Papa.parse(file, {
-      header: true,
-      skipEmptyLines: true,
-      complete: (results) => {
-        if (!results.data || results.data.length === 0) { toast('No data found in CSV.', 'error'); return; }
-        this.parsedData = results.data;
-        this.headers = results.meta.fields || Object.keys(results.data[0]);
-        this.showMapping();
-      },
-      error: () => toast('Failed to parse CSV file.', 'error')
-    });
-    input.value = '';
-  },
-
-  showMapping() {
-    const selects = ['mapChain', 'mapLeftXfall', 'mapCLDesign', 'mapRightXfall'];
-    const autoMap = {
-      mapChain: ['chain', 'chainage', 'sv', 'index', 'station'],
-      mapLeftXfall: ['left', 'left x-fall', 'left_xfall', 'lxf', 'left xfall', 'left x fall'],
-      mapCLDesign: ['centreline', 'centreline design', 'cl', 'cl_design', 'design level', 'centre', 'centerline', 'rl'],
-      mapRightXfall: ['right', 'right x-fall', 'right_xfall', 'rxf', 'right xfall', 'right x fall']
-    };
-
-    selects.forEach(selId => {
-      const sel = document.getElementById(selId);
-      sel.innerHTML = '<option value="">-- Select --</option>' +
-        this.headers.map(h => `<option value="${h}">${h}</option>`).join('');
-
-      // Auto-match
-      const patterns = autoMap[selId];
-      for (const h of this.headers) {
-        if (patterns.some(p => h.toLowerCase().includes(p))) {
-          sel.value = h; break;
-        }
-      }
-    });
-
-    document.getElementById('importMapping').style.display = 'block';
-    document.getElementById('importSummary').style.display = 'none';
-    document.getElementById('importPreview').style.display = 'none';
-  },
-
-  cancel() {
-    document.getElementById('importMapping').style.display = 'none';
-    this.parsedData = null;
-  },
-
-  async processMapping() {
-    const chainCol = document.getElementById('mapChain').value;
-    const leftCol = document.getElementById('mapLeftXfall').value;
-    const clCol = document.getElementById('mapCLDesign').value;
-    const rightCol = document.getElementById('mapRightXfall').value;
-
-    if (!chainCol || !leftCol || !clCol || !rightCol) { toast('Please map all required columns.', 'error'); return; }
-
-    const batchId = U.uuid();
-    const now = U.now();
-    let imported = 0, errors = 0, duplicates = 0;
-    const chainMap = new Map();
-    const rows = [];
-
-    for (const row of this.parsedData) {
-      const chain = parseFloat(row[chainCol]);
-      const leftXfall = U.normalizeXfall(row[leftCol]);
-      const clDesign = parseFloat(row[clCol]);
-      const rightXfall = U.normalizeXfall(row[rightCol]);
-
-      if (isNaN(chain) || isNaN(clDesign)) { errors++; continue; }
-
-      const point = {
-        id: U.uuid(),
-        chain,
-        left_xfall: leftXfall,
-        cl_design_level: clDesign,
-        right_xfall: rightXfall,
-        raw: JSON.stringify(row),
-        import_batch_id: batchId,
-        imported_at: now
-      };
-
-      if (chainMap.has(chain)) {
-        duplicates++;
-        // Keep last: replace
-        const idx = rows.findIndex(r => r.chain === chain);
-        if (idx >= 0) rows[idx] = point;
-      } else {
-        rows.push(point);
-      }
-      chainMap.set(chain, true);
-      imported++;
-    }
-
-    await DB.putBulk('design_points', rows);
-
-    // Summary
-    const chains = rows.map(r => r.chain).sort((a,b) => a - b);
-    document.getElementById('importSummary').style.display = 'block';
-    document.getElementById('importSummaryContent').innerHTML = `
-      <div class="row g-2 mono" style="font-size:0.85rem">
-        <div class="col-6"><span class="text-dim">Rows imported:</span> <strong class="text-amber">${rows.length}</strong></div>
-        <div class="col-6"><span class="text-dim">Parse errors:</span> <strong>${errors}</strong></div>
-        <div class="col-6"><span class="text-dim">Min CHAIN:</span> <strong>${U.fmtShort(chains[0])}</strong></div>
-        <div class="col-6"><span class="text-dim">Max CHAIN:</span> <strong>${U.fmtShort(chains[chains.length-1])}</strong></div>
-        <div class="col-6"><span class="text-dim">Duplicates (replaced):</span> <strong>${duplicates}</strong></div>
-        <div class="col-6"><span class="text-dim">Batch ID:</span> <span class="small">${batchId.slice(0,8)}</span></div>
-      </div>
-    `;
-
-    // Preview table
-    const preview = rows.slice(0, 10);
-    document.getElementById('importPreview').style.display = 'block';
-    document.getElementById('previewTable').innerHTML = `
-      <thead><tr><th>CHAIN</th><th>Left X-Fall</th><th>CL Design</th><th>Right X-Fall</th></tr></thead>
-      <tbody>${preview.map(r => `
-        <tr>
-          <td>${U.fmtShort(r.chain)}</td>
-          <td>${U.xfallDisplay(r.left_xfall)}</td>
-          <td>${U.fmt(r.cl_design_level, 3)}</td>
-          <td>${U.xfallDisplay(r.right_xfall)}</td>
-        </tr>
-      `).join('')}</tbody>
-    `;
-
-    document.getElementById('importMapping').style.display = 'none';
-    this.parsedData = null;
-    toast(`Imported ${rows.length} design points.`, 'success');
-  }
-};
-
-// ---- DESIGN TABLE ----
-App.design = {
-  async render() {
-    const all = await DB.getAll('design_points');
-    const search = document.getElementById('designSearch').value.trim();
-    let filtered = all.sort((a,b) => a.chain - b.chain);
-    if (search) {
-      const q = parseFloat(search);
-      if (!isNaN(q)) filtered = filtered.filter(p => String(p.chain).includes(search));
-      else filtered = filtered.filter(p => String(p.chain).includes(search));
-    }
-
-    document.getElementById('designCount').textContent = filtered.length + ' points';
-    document.getElementById('designTableBody').innerHTML = filtered.map((p, i) => `
-      <tr>
-        <td class="text-dim">${i+1}</td>
-        <td class="text-amber fw-bold">${U.fmtShort(p.chain)}</td>
-        <td>${U.xfallDisplay(p.left_xfall)}</td>
-        <td>${U.fmt(p.cl_design_level, 3)}</td>
-        <td>${U.xfallDisplay(p.right_xfall)}</td>
-        <td class="text-dim small">${U.fmtDate(p.imported_at)}</td>
-      </tr>
-    `).join('');
-  },
-
-  search() { this.render(); },
-
-  async clearAll() {
-    showConfirm('Clear Design Points?', 'This will delete all imported design data.', async () => {
-      await DB.clearStore('design_points');
-      this.render();
-      toast('Design points cleared.', 'info');
-    });
-  }
-};
-
-// ---- VERIFY / CAPTURE ----
-App.verify = {
-  selectedPoint: null,
-  collimation: null,
-
-  async checkBM() {
-    const enabled = await App.settings.get('bm_enabled', false);
-    document.getElementById('bmBar').style.display = enabled ? 'block' : 'none';
-    const mode = await App.settings.get('match_mode', 'approximate');
-    document.getElementById('exactMatch').checked = mode === 'exact';
-  },
-
-  async lookup() {
-    const input = parseFloat(document.getElementById('verifyIndex').value);
-    if (isNaN(input)) { toast('Enter a valid index number.', 'error'); return; }
-
-    const all = await DB.getAll('design_points');
-    if (all.length === 0) { toast('No design points imported. Import a CSV first.', 'error'); return; }
-
-    const exact = document.getElementById('exactMatch').checked;
-    let match = null;
-
-    if (exact) {
-      match = all.find(p => p.chain === input);
-      if (!match) { toast(`No exact match for CHAIN ${input}.`, 'error'); return; }
-    } else {
-      // Closest chain <= input (VLOOKUP approximate)
-      const sorted = all.filter(p => p.chain <= input).sort((a,b) => b.chain - a.chain);
-      match = sorted[0];
-      if (!match) {
-        // fallback: closest overall
-        const allSorted = all.sort((a,b) => Math.abs(a.chain - input) - Math.abs(b.chain - input));
-        match = allSorted[0];
-        toast(`No chain <= ${input}. Closest match: ${match.chain}`, 'info');
-      }
-    }
-
-    this.selectedPoint = { ...match, input_index: input };
-    document.getElementById('spInput').textContent = input;
-    document.getElementById('spChain').textContent = U.fmtShort(match.chain);
-    document.getElementById('spLeft').textContent = U.xfallDisplay(match.left_xfall);
-    document.getElementById('spCL').textContent = U.fmt(match.cl_design_level, 3);
-    document.getElementById('spRight').textContent = U.xfallDisplay(match.right_xfall);
-    document.getElementById('selectedPoint').style.display = 'block';
-    document.getElementById('verifySection').style.display = 'block';
-    this.buildGrid();
-    this.updateSaveBtn();
-  },
-
-  async buildGrid() {
-    const n = parseInt(document.getElementById('pointCount').value);
-    const profileStr = await App.settings.get('default_profile', '-10, -5, 0, -5, -10');
-    const defaultProfile = profileStr.split(',').map(s => parseFloat(s.trim()));
-
-    // Generate target profile for n points
-    const targets = [];
-    const labels = [];
-    if (n === 1) {
-      targets.push(0);
-      labels.push('CL');
-    } else {
-      // Interpolate from default profile to n points
-      for (let i = 0; i < n; i++) {
-        const t = i / (n - 1); // 0 to 1
-        const srcIdx = t * (defaultProfile.length - 1);
-        const lo = Math.floor(srcIdx);
-        const hi = Math.ceil(srcIdx);
-        const frac = srcIdx - lo;
-        const val = lo === hi ? defaultProfile[lo] : defaultProfile[lo] * (1 - frac) + defaultProfile[hi] * frac;
-        targets.push(Math.round(val * 100) / 100);
-
-        // Label: L(n-i) ... CL ... R(i)
-        const mid = (n - 1) / 2;
-        if (Math.abs(i - mid) < 0.01) labels.push('CL');
-        else if (i < mid) labels.push('L' + (Math.ceil(mid) - i));
-        else labels.push('R' + (i - Math.floor(mid)));
-      }
-    }
-
-    const bmEnabled = await App.settings.get('bm_enabled', false);
-
-    const head = document.getElementById('verifyGridHead');
-    const body = document.getElementById('verifyGridBody');
-
-    let headHTML = '<tr><th>Pos</th><th>Target %</th>';
-    if (bmEnabled) headHTML += '<th>Staff</th><th>Elev (auto)</th>';
-    else headHTML += '<th>Staff</th><th>Elevation</th>';
-    headHTML += '</tr>';
-    head.innerHTML = headHTML;
-
-    let bodyHTML = '';
-    for (let i = 0; i < n; i++) {
-      bodyHTML += `<tr>
-        <td>
-          <input type="text" class="vf-grid-input vp-label" data-seq="${i}" value="${labels[i]}" style="width:50px">
-        </td>
-        <td class="mono text-dim">${targets[i].toFixed(1)}%</td>
-        <td>
-          <input type="number" step="any" class="vf-grid-input vp-staff" data-seq="${i}" inputmode="decimal"
-            placeholder="0.000" oninput="App.verify.onInput(${i})">
-        </td>
-        <td>
-          <input type="number" step="any" class="vf-grid-input vp-elev" data-seq="${i}" inputmode="decimal"
-            placeholder="0.000" ${bmEnabled ? 'readonly style="opacity:0.7"' : ''} oninput="App.verify.onInput(${i})">
-        </td>
-      </tr>`;
-    }
-    body.innerHTML = bodyHTML;
-
-    // Store targets
-    this._targets = targets;
-    this._labels = labels;
-    this.updateSaveBtn();
-  },
-
-  calcCollimation() {
-    const bm = parseFloat(document.getElementById('bmHeight').value);
-    const staff = parseFloat(document.getElementById('bmStaff').value);
-    if (!isNaN(bm) && !isNaN(staff)) {
-      this.collimation = bm + staff;
-      document.getElementById('collimationVal').textContent = U.fmt(this.collimation, 3);
-    } else {
-      this.collimation = null;
-      document.getElementById('collimationVal').textContent = '--';
-    }
-    // Recalc all elevations
-    document.querySelectorAll('.vp-staff').forEach(el => {
-      this.onInput(parseInt(el.dataset.seq));
-    });
-  },
-
-  async onInput(seq) {
-    const bmEnabled = await App.settings.get('bm_enabled', false);
-    if (bmEnabled && this.collimation != null) {
-      const staffVal = parseFloat(document.querySelector(`.vp-staff[data-seq="${seq}"]`).value);
-      const elevInput = document.querySelector(`.vp-elev[data-seq="${seq}"]`);
-      if (!isNaN(staffVal)) {
-        elevInput.value = (this.collimation - staffVal).toFixed(4);
-      } else {
-        elevInput.value = '';
-      }
-    }
-    this.updateSaveBtn();
-  },
-
-  updateSaveBtn() {
-    const btn = document.getElementById('saveBtn');
-    if (!this.selectedPoint) { btn.disabled = true; return; }
-    const hasValue = [...document.querySelectorAll('.vp-staff, .vp-elev')].some(el => el.value.trim() !== '');
-    btn.disabled = !hasValue;
-  },
-
-  save() {
-    if (!this.selectedPoint) return;
-
-    const n = parseInt(document.getElementById('pointCount').value);
-    const points = [];
-    for (let i = 0; i < n; i++) {
-      const label = document.querySelector(`.vp-label[data-seq="${i}"]`)?.value || '';
-      const staff = parseFloat(document.querySelector(`.vp-staff[data-seq="${i}"]`)?.value);
-      const elev = parseFloat(document.querySelector(`.vp-elev[data-seq="${i}"]`)?.value);
-      points.push({
-        seq: i + 1,
-        label,
-        target_pct: this._targets ? this._targets[i] : 0,
-        staff: isNaN(staff) ? null : staff,
-        elevation: isNaN(elev) ? null : elev
+  async function parseFile(file) {
+    const ext=file.name.split('.').pop().toLowerCase();
+    if (ext==='csv') {
+      return new Promise((res,rej)=>{
+        Papa.parse(file,{header:true,skipEmptyLines:true,complete:r=>{
+          _data=r.data; _hdrs=r.meta.fields||[];
+          res({data:_data,headers:_hdrs});
+        },error:rej});
       });
     }
-
-    const sp = this.selectedPoint;
-    const notes = document.getElementById('verifyNotes').value.trim();
-
-    // Build preview
-    const preview = points.filter(p => p.staff != null || p.elevation != null)
-      .map(p => `<div class="mono small">${p.label}: Staff=${p.staff != null ? p.staff.toFixed(3) : '--'}, Elev=${p.elevation != null ? p.elevation.toFixed(4) : '--'}</div>`)
-      .join('');
-
-    showConfirm(
-      `Save Verification for CHAIN ${U.fmtShort(sp.chain)}?`,
-      `<div class="mb-2">Input: <strong>${sp.input_index}</strong> | Resolved: <strong class="text-amber">${U.fmtShort(sp.chain)}</strong></div>
-       <div class="mb-2">CL Design: ${U.fmt(sp.cl_design_level, 3)} | Points: ${n}</div>
-       ${notes ? `<div class="mb-2 text-dim">Notes: ${notes}</div>` : ''}
-       <div class="mt-2 p-2 rounded" style="background:var(--vf-surface2)">${preview}</div>`,
-      async () => {
-        const entryId = U.uuid();
-        const entry = {
-          id: entryId,
-          created_at: U.now(),
-          user: App.auth.currentUser,
-          input_index: sp.input_index,
-          resolved_chain: sp.chain,
-          design_point_id: sp.id,
-          cl_design_level: sp.cl_design_level,
-          left_xfall: sp.left_xfall,
-          right_xfall: sp.right_xfall,
-          point_count: n,
-          notes
+    if (['xlsx','xls'].includes(ext)) {
+      return new Promise((res,rej)=>{
+        const fr=new FileReader();
+        fr.onload=e=>{
+          try {
+            const wb=XLSX.read(e.target.result,{type:'array'});
+            const ws=wb.Sheets[wb.SheetNames[0]];
+            const rows=XLSX.utils.sheet_to_json(ws,{header:1});
+            if (rows.length<2) throw new Error('File appears empty');
+            _hdrs=rows[0].map(h=>String(h));
+            _data=rows.slice(1).map(row=>{ const o={}; _hdrs.forEach((h,i)=>o[h]=row[i]??''); return o; });
+            res({data:_data,headers:_hdrs});
+          } catch(err){rej(err);}
         };
-
-        const childPoints = points.map(p => ({
-          id: U.uuid(),
-          entry_id: entryId,
-          seq: p.seq,
-          position_label: p.label,
-          target_profile_pct: p.target_pct,
-          staff_reading: p.staff,
-          elevation: p.elevation,
-          delta_to_design: p.elevation != null ? (p.elevation - sp.cl_design_level) : null,
-          comment: ''
-        }));
-
-        await DB.put('asbuilt_entries', entry);
-        await DB.putBulk('asbuilt_points', childPoints);
-
-        toast(`Saved verification for CHAIN ${U.fmtShort(sp.chain)}.`, 'success');
-
-        // Clear for next
-        document.getElementById('verifyIndex').value = '';
-        document.getElementById('verifyNotes').value = '';
-        this.selectedPoint = null;
-        document.getElementById('selectedPoint').style.display = 'none';
-        // Keep grid but clear values
-        document.querySelectorAll('.vp-staff, .vp-elev').forEach(el => el.value = '');
-        this.updateSaveBtn();
-      }
-    );
+        fr.onerror=rej;
+        fr.readAsArrayBuffer(file);
+      });
+    }
+    throw new Error('Unsupported format. Use .csv or .xlsx');
   }
-};
 
-// ---- AS-BUILT ----
-App.asbuilt = {
-  async render() {
-    const entries = await DB.getAll('asbuilt_entries');
-    const search = document.getElementById('abSearch').value.trim();
+  function autoMap(hdrs) {
+    const m={chain:null,lx:null,cl:null,rx:null};
+    hdrs.forEach(h=>{
+      const l=h.toLowerCase();
+      if (!m.chain  && /chain|chainage|sv\b|index|station|km/.test(l)) m.chain=h;
+      if (!m.lx     && /left|l[\s_]?x|lxfall/.test(l)) m.lx=h;
+      if (!m.cl     && /centr|center|cl\b|design.level|rl\b|level/.test(l)) m.cl=h;
+      if (!m.rx     && /right|r[\s_]?x|rxfall/.test(l)) m.rx=h;
+    });
+    return m;
+  }
 
-    let filtered = entries.sort((a,b) => b.created_at.localeCompare(a.created_at));
-    if (search) {
-      const q = parseFloat(search);
-      if (!isNaN(q)) filtered = filtered.filter(e => String(e.resolved_chain).includes(search) || String(e.input_index).includes(search));
+  async function importData(map) {
+    if (!_data) throw new Error('No parsed data');
+    const batchId=uuid();
+    const now=new Date().toISOString();
+    const seen=new Map();
+    const errs=[];
+
+    for (let i=0;i<_data.length;i++) {
+      const row=_data[i];
+      const chain=parseFloat(row[map.chain]);
+      const cl=parseFloat(row[map.cl]);
+      if (isNaN(chain)) { errs.push({r:i+2,msg:`Bad CHAIN: "${row[map.chain]}"`}); continue; }
+      if (isNaN(cl))    { errs.push({r:i+2,msg:`Bad CL Level: "${row[map.cl]}"`}); continue; }
+      const pt={id:uuid(),chain,left_xfall:normalizeXfall(row[map.lx]),cl_design_level:cl,right_xfall:normalizeXfall(row[map.rx]),raw:row,import_batch_id:batchId,imported_at:now};
+      seen.set(chain,pt);
     }
 
-    document.getElementById('abCount').textContent = filtered.length + ' entries';
-    document.getElementById('abTableBody').innerHTML = filtered.map(e => `
-      <tr style="cursor:pointer" onclick="App.asbuilt.showDetail('${e.id}')">
-        <td class="small">${U.fmtDate(e.created_at)}</td>
-        <td>${e.user}</td>
-        <td class="mono">${U.fmtShort(e.input_index)}</td>
-        <td class="mono text-amber fw-bold">${U.fmtShort(e.resolved_chain)}</td>
-        <td class="mono">${U.fmt(e.cl_design_level, 3)}</td>
-        <td>${e.point_count}</td>
-        <td class="text-dim small">${e.notes || ''}</td>
-        <td>
-          <button class="btn btn-sm" style="color:var(--vf-red)" onclick="event.stopPropagation(); App.asbuilt.deleteEntry('${e.id}')">
-            <i class="bi bi-trash"></i>
-          </button>
-        </td>
+    const points=[...seen.values()];
+    if (points.length) await db.design_points.bulkAdd(points);
+    return {imported:points.length,total:_data.length,dupes:_data.length-errs.length-points.length,errors:errs,
+      minChain:points.length?Math.min(...points.map(p=>p.chain)):0,
+      maxChain:points.length?Math.max(...points.map(p=>p.chain)):0};
+  }
+
+  function getHeaders() { return _hdrs; }
+
+  return { parseFile, autoMap, importData, getHeaders };
+})();
+
+// ============================================================
+// MODULE 6: LOOKUP
+// ============================================================
+const Lookup = (() => {
+  async function find(idx, mode='closest') {
+    const pts=await db.design_points.orderBy('chain').toArray();
+    if (!pts.length) return {found:false,reason:'No design points imported. Please import a Design CSV first.'};
+
+    if (mode==='exact') {
+      const m=pts.find(p=>p.chain===idx);
+      if (m) return {found:true,point:m,matchType:'exact match'};
+      return {found:false,reason:`No exact match for CHAIN ${idx}`};
+    }
+
+    // Closest ≤ (VLOOKUP approximate)
+    let best=null;
+    for (const p of pts) {
+      if (p.chain<=idx) best=p;
+      else break;
+    }
+    if (best) return {found:true,point:best,matchType:best.chain===idx?'exact match':`≤ closest (${best.chain})`};
+    return {found:false,reason:`All CHAIN values > ${idx}. No match found.`};
+  }
+  return { find };
+})();
+
+// ============================================================
+// MODULE 7: PROFILE GENERATOR
+// ============================================================
+const Profile = (() => {
+  function generate(n, leftPct=-10, rightPct=-10) {
+    if (n===1) return [{label:'CL',pct:0}];
+
+    const hasCL=n%2===1;
+    const side=Math.floor(n/2);
+    const pts=[];
+
+    for (let i=side;i>=1;i--) pts.push({label:`L${i}`,pct:(leftPct*(i/side))/100});
+    if (hasCL) pts.push({label:'CL',pct:0});
+    for (let i=1;i<=side;i++) pts.push({label:`R${i}`,pct:(rightPct*(i/side))/100});
+
+    return pts;
+  }
+  return { generate };
+})();
+
+// ============================================================
+// MODULE 8: CAPTURE STATE
+// ============================================================
+const Cap = (() => {
+  let _point=null, _rows=[], _n=5, _collim=null;
+  return {
+    setPoint(p){ _point=p; },
+    getPoint(){ return _point; },
+    setRows(r){ _rows=r; },
+    getRows(){ return _rows; },
+    setN(n){ _n=n; },
+    getN(){ return _n; },
+    setCollim(c){ _collim=c; },
+    getCollim(){ return _collim; },
+    clear(){
+      _point=null; _rows=[];
+    }
+  };
+})();
+
+// ============================================================
+// MODULE 9: CAPTURE UI
+// ============================================================
+const CaptureUI = (() => {
+  function render(n, dp) {
+    const cfg=Cfg.get();
+    const profile=Profile.generate(n, cfg.profLeft, cfg.profRight);
+    const tbody=document.getElementById('vt-body');
+    const useBM=cfg.useBM;
+
+    const rows=profile.map((p,i)=>({seq:i+1,label:p.label,pct:p.pct,staff:null,elev:null,delta:null,comment:''}));
+    Cap.setRows(rows);
+
+    tbody.innerHTML=rows.map((r,i)=>`
+      <tr id="vr-${i}">
+        <td><input type="text" class="fb-input" value="${esc(r.label)}" data-i="${i}" data-f="label" style="width:65px;min-width:0;"></td>
+        <td><input type="number" class="fb-input" value="${(r.pct*100).toFixed(2)}" data-i="${i}" data-f="pct" step="0.01" style="width:75px;min-width:0;" inputmode="decimal"></td>
+        <td><input type="number" class="fb-input" placeholder="0.000" data-i="${i}" data-f="staff" step="0.001" style="width:95px;min-width:0;" inputmode="decimal"></td>
+        <td><input type="number" class="fb-input ${useBM?'':''}\" placeholder="${useBM?'auto':'0.000'}" data-i="${i}" data-f="elev" step="0.001" style="width:95px;min-width:0;" inputmode="decimal" ${useBM?'readonly':''} ${useBM?'style="opacity:0.6;width:95px;min-width:0;"':''}></td>
+        <td id="dc-${i}" class="delta-zero" style="text-align:center;">—</td>
+        <td><input type="text" class="fb-input" placeholder="…" data-i="${i}" data-f="comment" style="width:85px;min-width:0;"></td>
       </tr>
     `).join('');
-  },
 
-  async showDetail(id) {
-    const entry = await DB.get('asbuilt_entries', id);
-    const points = await DB.getByIndex('asbuilt_points', 'entry_id', id);
-    if (!entry) return;
+    // Events
+    tbody.querySelectorAll('input[data-f="staff"]').forEach(inp=>{
+      inp.addEventListener('input',e=>onStaff(e,dp));
+      inp.addEventListener('keydown',tabNext);
+    });
+    tbody.querySelectorAll('input[data-f="elev"]').forEach(inp=>{
+      inp.addEventListener('input',e=>onElev(e,dp));
+    });
+    tbody.querySelectorAll('input[data-f="label"]').forEach(inp=>{
+      inp.addEventListener('change',e=>{ Cap.getRows()[+e.target.dataset.i].label=e.target.value; });
+    });
+    tbody.querySelectorAll('input[data-f="pct"]').forEach(inp=>{
+      inp.addEventListener('change',e=>{ const i=+e.target.dataset.i; Cap.getRows()[i].pct=parseFloat(e.target.value)/100||0; computeDelta(i,dp); });
+    });
+    tbody.querySelectorAll('input[data-f="comment"]').forEach(inp=>{
+      inp.addEventListener('change',e=>{ Cap.getRows()[+e.target.dataset.i].comment=e.target.value; });
+    });
 
-    points.sort((a,b) => a.seq - b.seq);
+    refreshSaveBtn();
+  }
 
-    document.getElementById('detailTitle').textContent = `CHAIN ${U.fmtShort(entry.resolved_chain)}`;
-    document.getElementById('detailBody').innerHTML = `
-      <div class="row g-2 mono mb-3" style="font-size:0.85rem">
-        <div class="col-6"><span class="text-dim">Date:</span> ${U.fmtDate(entry.created_at)}</div>
-        <div class="col-6"><span class="text-dim">User:</span> ${entry.user}</div>
-        <div class="col-4"><span class="text-dim">Input:</span> ${U.fmtShort(entry.input_index)}</div>
-        <div class="col-4"><span class="text-dim">Chain:</span> <span class="text-amber">${U.fmtShort(entry.resolved_chain)}</span></div>
-        <div class="col-4"><span class="text-dim">CL:</span> ${U.fmt(entry.cl_design_level, 3)}</div>
-        <div class="col-6"><span class="text-dim">L X-Fall:</span> ${U.xfallDisplay(entry.left_xfall)}</div>
-        <div class="col-6"><span class="text-dim">R X-Fall:</span> ${U.xfallDisplay(entry.right_xfall)}</div>
-        ${entry.notes ? `<div class="col-12 text-dim">Notes: ${entry.notes}</div>` : ''}
-      </div>
-      <h6 class="text-amber mb-2">Verification Points</h6>
-      <div style="overflow-x:auto">
-        <table class="vf-table">
-          <thead><tr><th>#</th><th>Position</th><th>Target %</th><th>Staff</th><th>Elevation</th><th>Delta</th></tr></thead>
-          <tbody>
-            ${points.map(p => `
-              <tr>
-                <td>${p.seq}</td>
-                <td>${p.position_label}</td>
-                <td>${p.target_profile_pct != null ? p.target_profile_pct.toFixed(1) + '%' : '--'}</td>
-                <td class="mono">${p.staff_reading != null ? p.staff_reading.toFixed(3) : '--'}</td>
-                <td class="mono">${p.elevation != null ? p.elevation.toFixed(4) : '--'}</td>
-                <td class="mono ${p.delta_to_design != null ? (Math.abs(p.delta_to_design) > 0.01 ? 'text-danger' : 'text-success') : ''}">${p.delta_to_design != null ? (p.delta_to_design >= 0 ? '+' : '') + p.delta_to_design.toFixed(4) : '--'}</td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>
-      </div>
-    `;
-    new bootstrap.Modal(document.getElementById('detailModal')).show();
-  },
+  function tabNext(e) {
+    if (e.key==='Enter'||e.key==='Tab') {
+      const inps=[...document.querySelectorAll('#vt-body input[data-f="staff"]')];
+      const idx=inps.indexOf(e.target);
+      if (idx>=0&&idx<inps.length-1){ e.preventDefault(); inps[idx+1].focus(); }
+    }
+  }
 
-  deleteEntry(id) {
-    showConfirm('Delete Entry?', 'This as-built entry will be permanently removed.', async () => {
-      // Delete child points
-      const points = await DB.getByIndex('asbuilt_points', 'entry_id', id);
-      for (const p of points) await DB.del('asbuilt_points', p.id);
-      await DB.del('asbuilt_entries', id);
-      this.render();
-      toast('Entry deleted.', 'info');
+  function onStaff(e, dp) {
+    const i=+e.target.dataset.i;
+    const v=parseFloat(e.target.value);
+    const rows=Cap.getRows();
+    rows[i].staff=isNaN(v)?null:v;
+
+    // BM auto-calc
+    const cfg=Cfg.get();
+    const c=Cap.getCollim();
+    if (cfg.useBM && c!==null && !isNaN(v)) {
+      const el=c-v;
+      rows[i].elev=el;
+      const inp=document.querySelector(`#vr-${i} input[data-f="elev"]`);
+      if (inp) inp.value=el.toFixed(3);
+    }
+    computeDelta(i,dp);
+    refreshSaveBtn();
+  }
+
+  function onElev(e, dp) {
+    const i=+e.target.dataset.i;
+    const v=parseFloat(e.target.value);
+    Cap.getRows()[i].elev=isNaN(v)?null:v;
+    computeDelta(i,dp);
+    refreshSaveBtn();
+  }
+
+  function computeDelta(i, dp) {
+    const rows=Cap.getRows();
+    const r=rows[i];
+    const cell=document.getElementById(`dc-${i}`);
+    if (!cell) return;
+    if (r.elev!==null && dp) {
+      const delta=r.elev-dp.cl_design_level;
+      r.delta=delta;
+      const sign=delta>=0?'+':'';
+      const cls=Math.abs(delta)<0.001?'delta-zero':delta>0?'delta-plus':'delta-minus';
+      cell.innerHTML=`<span class="${cls}">${sign}${delta.toFixed(3)}</span>`;
+    } else {
+      r.delta=null;
+      cell.innerHTML='<span class="delta-zero">—</span>';
+    }
+  }
+
+  function refreshSaveBtn() {
+    const rows=Cap.getRows();
+    const hasVal=rows.some(r=>r.staff!==null||r.elev!==null);
+    const hasDP=Cap.getPoint()!==null;
+    document.getElementById('btn-save-cap').disabled=!(hasVal&&hasDP);
+  }
+
+  return { render, refreshSaveBtn };
+})();
+
+// ============================================================
+// MODULE 10: STAKEOUT STATE & UI
+// ============================================================
+const Stakeout = (() => {
+  let _point=null, _collim=null, _leftNails=[], _rightNails=[], _leftSeq=1, _rightSeq=1;
+
+  function setPoint(p){ _point=p; }
+  function getPoint(){ return _point; }
+  function setCollim(c){ _collim=c; }
+  function getCollim(){ return _collim; }
+  function getLeftNails(){ return _leftNails; }
+  function getRightNails(){ return _rightNails; }
+
+  function addNail(side) {
+    if (side==='left') {
+      const nail={seq:_leftSeq,label:`L${_leftSeq}`,travel:0,offset:0,xfall:_point?.left_xfall||0,design:null,staff:null};
+      _leftNails.push(nail);
+      _leftSeq++;
+    } else {
+      const nail={seq:_rightSeq,label:`R${_rightSeq}`,travel:0,offset:0,xfall:_point?.right_xfall||0,design:null,staff:null};
+      _rightNails.push(nail);
+      _rightSeq++;
+    }
+    render();
+  }
+
+  function removeNail(side,seq) {
+    if (side==='left') _leftNails=_leftNails.filter(n=>n.seq!==seq);
+    else _rightNails=_rightNails.filter(n=>n.seq!==seq);
+    _renumberNails();
+    render();
+  }
+
+  function _renumberNails() {
+    // Re-sequence left nails: L1, L2, L3...
+    _leftNails.forEach((n,i)=>{
+      n.seq=i+1;
+      n.label=`L${i+1}`;
+    });
+    _leftSeq=_leftNails.length+1;
+
+    // Re-sequence right nails: R1, R2, R3...
+    _rightNails.forEach((n,i)=>{
+      n.seq=i+1;
+      n.label=`R${i+1}`;
+    });
+    _rightSeq=_rightNails.length+1;
+  }
+
+  function updateNail(side,seq,field,val) {
+    const nails=side==='left'?_leftNails:_rightNails;
+    const nail=nails.find(n=>n.seq===seq);
+    if (!nail) return;
+    
+    if (field==='label') nail.label=val;
+    else if (field==='travel') nail.travel=parseFloat(val)||0;
+    else if (field==='offset') nail.offset=parseFloat(val)||0;
+    else if (field==='xfall') nail.xfall=parseFloat(val)/100||0;
+
+    // Calculate design & staff
+    if (_point && nail.offset!==null) {
+      const offsetDist=side==='left'?-nail.offset:nail.offset; // left is negative
+      nail.design=_point.cl_design_level + (offsetDist * nail.xfall);
+      nail.staff=_collim!==null ? _collim - nail.design : null;
+    } else {
+      nail.design=null;
+      nail.staff=null;
+    }
+  }
+
+  function render() {
+    _renderTable('left',_leftNails,document.getElementById('so-left-body'));
+    _renderTable('right',_rightNails,document.getElementById('so-right-body'));
+    _refreshSaveBtn();
+  }
+
+  function _renderTable(side,nails,tbody) {
+    if (!nails.length) {
+      tbody.innerHTML=`<tr><td colspan="7" style="text-align:center;padding:1rem;color:var(--text-muted);font-size:0.75rem;">Add nails using + button</td></tr>`;
+      return;
+    }
+    tbody.innerHTML=nails.map(n=>`
+      <tr>
+        <td><input type="text" class="fb-input" value="${esc(n.label)}" data-side="${side}" data-seq="${n.seq}" data-f="label" style="width:48px;min-width:0;"></td>
+        <td><input type="number" class="fb-input" value="${n.travel}" data-side="${side}" data-seq="${n.seq}" data-f="travel" step="0.001" style="width:68px;min-width:0;" inputmode="decimal"></td>
+        <td><input type="number" class="fb-input" value="${n.offset}" data-side="${side}" data-seq="${n.seq}" data-f="offset" step="0.001" style="width:68px;min-width:0;" inputmode="decimal"></td>
+        <td><input type="number" class="fb-input" value="${(n.xfall*100).toFixed(3)}" data-side="${side}" data-seq="${n.seq}" data-f="xfall" step="0.001" style="width:68px;min-width:0;" inputmode="decimal"></td>
+        <td class="mono text-amber">${n.design!==null?n.design.toFixed(3):'—'}</td>
+        <td class="mono" style="color:var(--green);">${n.staff!==null?n.staff.toFixed(3):'—'}</td>
+        <td><button class="btn-icon" data-side="${side}" data-seq="${n.seq}" data-action="del" style="padding:0.25rem 0.35rem;font-size:0.7rem;"><i class="bi bi-trash"></i></button></td>
+      </tr>
+    `).join('');
+
+    tbody.querySelectorAll('input[data-f]').forEach(inp=>{
+      inp.addEventListener('change',e=>{
+        updateNail(e.target.dataset.side,+e.target.dataset.seq,e.target.dataset.f,e.target.value);
+        render();
+      });
+    });
+    tbody.querySelectorAll('button[data-action="del"]').forEach(btn=>{
+      btn.addEventListener('click',e=>removeNail(btn.dataset.side,+btn.dataset.seq));
     });
   }
-};
 
-// ---- EXPORT ----
-App.export = {
-  async getData() {
-    const entries = await DB.getAll('asbuilt_entries');
-    const points = await DB.getAll('asbuilt_points');
-    const pointsByEntry = {};
-    points.forEach(p => {
-      if (!pointsByEntry[p.entry_id]) pointsByEntry[p.entry_id] = [];
-      pointsByEntry[p.entry_id].push(p);
-    });
-    // Sort points
-    Object.values(pointsByEntry).forEach(arr => arr.sort((a,b) => a.seq - b.seq));
-    return { entries: entries.sort((a,b) => a.created_at.localeCompare(b.created_at)), pointsByEntry };
-  },
+  function _refreshSaveBtn() {
+    const hasNails=_leftNails.length>0||_rightNails.length>0;
+    const hasPoint=_point!==null;
+    document.getElementById('btn-save-so').disabled=!(hasNails&&hasPoint);
+  }
 
-  buildWide(entries, pointsByEntry) {
-    const rows = [];
+  function clear() {
+    _point=null; _collim=null; _leftNails=[]; _rightNails=[]; _leftSeq=1; _rightSeq=1;
+    render();
+  }
+
+  return { setPoint, getPoint, setCollim, getCollim, getLeftNails, getRightNails, addNail, render, clear };
+})();
+
+// ============================================================
+// MODULE 11: EXPORTER
+// ============================================================
+const Exporter = (() => {
+  async function wideRows() {
+    const entries=await db.asbuilt_entries.toArray();
+    const rows=[];
     for (const e of entries) {
-      const row = {
-        created_at: e.created_at,
-        user: e.user,
-        input_index: e.input_index,
-        resolved_chain: e.resolved_chain,
-        cl_design_level: e.cl_design_level,
-        left_xfall: e.left_xfall,
-        right_xfall: e.right_xfall,
-        point_count: e.point_count,
-        notes: e.notes || ''
-      };
-      const pts = pointsByEntry[e.id] || [];
-      for (let i = 0; i < 8; i++) {
-        const p = pts[i];
-        const prefix = `P${i+1}`;
-        row[prefix + '_label'] = p ? p.position_label : '';
-        row[prefix + '_target_pct'] = p ? p.target_profile_pct : '';
-        row[prefix + '_staff'] = p ? (p.staff_reading != null ? p.staff_reading : '') : '';
-        row[prefix + '_elev'] = p ? (p.elevation != null ? p.elevation : '') : '';
-        row[prefix + '_delta'] = p ? (p.delta_to_design != null ? p.delta_to_design : '') : '';
+      const pts=(await db.asbuilt_points.where('entry_id').equals(e.id).toArray()).sort((a,b)=>a.seq-b.seq);
+      const r={created_at:e.created_at,user:e.user,input_index:e.input_index,resolved_chain:e.resolved_chain,
+               cl_design_level:e.cl_design_level,left_xfall:e.left_xfall,right_xfall:e.right_xfall,
+               point_count:e.point_count,notes:e.notes||''};
+      for (let p=1;p<=8;p++){
+        const pt=pts.find(x=>x.seq===p);
+        r[`P${p}_label`]=pt?pt.position_label:'';
+        r[`P${p}_target_pct`]=pt?pt.target_profile_pct:'';
+        r[`P${p}_staff`]=pt&&pt.staff_reading!==null?pt.staff_reading:'';
+        r[`P${p}_elev`]=pt&&pt.elevation!==null?pt.elevation:'';
+        r[`P${p}_delta`]=pt&&pt.delta_to_design!==null?pt.delta_to_design:'';
       }
-      rows.push(row);
+      rows.push(r);
     }
     return rows;
-  },
+  }
 
-  buildLong(entries, pointsByEntry) {
-    const rows = [];
+  async function longRows() {
+    const entries=await db.asbuilt_entries.toArray();
+    const eMap=Object.fromEntries(entries.map(e=>[e.id,e]));
+    const pts=await db.asbuilt_points.toArray();
+    return pts.map(p=>{
+      const e=eMap[p.entry_id]||{};
+      return {entry_id:p.entry_id,created_at:e.created_at||'',user:e.user||'',resolved_chain:e.resolved_chain||'',
+              seq:p.seq,label:p.position_label,target_pct:p.target_profile_pct,
+              staff_reading:p.staff_reading??'',elevation:p.elevation??'',delta_to_design:p.delta_to_design??'',comment:p.comment||''};
+    }).sort((a,b)=>a.created_at<b.created_at?-1:a.created_at>b.created_at?1:a.seq-b.seq);
+  }
+
+  async function matrixRows() {
+    // Cross-section matrix: chainages as rows, positions as columns
+    const entries=await db.asbuilt_entries.orderBy('resolved_chain').toArray();
+    
+    // Group by chainage
+    const chainMap=new Map();
     for (const e of entries) {
-      const pts = pointsByEntry[e.id] || [];
-      for (const p of pts) {
+      if (!chainMap.has(e.resolved_chain)) chainMap.set(e.resolved_chain,{entry:e,points:[]});
+      const pts=await db.asbuilt_points.where('entry_id').equals(e.id).toArray();
+      chainMap.get(e.resolved_chain).points.push(...pts.map(p=>({...p,cl_design:e.cl_design_level})));
+    }
+
+    // Get all unique positions (target_pct) across all entries, sorted left to right
+    const allPos=new Set();
+    chainMap.forEach(({points})=>points.forEach(p=>allPos.add(p.target_profile_pct)));
+    const positions=[...allPos].sort((a,b)=>a-b);
+
+    // Build matrix rows
+    const rows=[];
+    chainMap.forEach(({entry,points},chain)=>{
+      const row={SV:chain};
+      positions.forEach(pos=>{
+        const pt=points.find(p=>Math.abs(p.target_profile_pct-pos)<0.0001);
+        const posKey=(pos*100).toFixed(1); // e.g., "-10.0", "0.0", "10.0"
+        if (pt && pt.elevation!==null) {
+          const actual=pt.elevation;
+          const diff=pt.delta_to_design??0;
+          const design=actual-diff; // Design = Actual - Diff
+          row[`${posKey}_Actual`]=parseFloat(actual.toFixed(3));
+          row[`${posKey}_Design`]=parseFloat(design.toFixed(3));
+          row[`${posKey}_Diff`]=diff!==null?parseFloat(diff.toFixed(3)):'';
+        } else {
+          row[`${posKey}_Actual`]='';
+          row[`${posKey}_Design`]='';
+          row[`${posKey}_Diff`]='';
+        }
+      });
+      rows.push(row);
+    });
+
+    return {rows,positions};
+  }
+
+  async function stakeoutRows() {
+    const entries=await db.stakeout_entries.orderBy('resolved_chain').toArray();
+    const rows=[];
+    for (const e of entries) {
+      const nails=(await db.stakeout_nails.where('entry_id').equals(e.id).toArray()).sort((a,b)=>a.seq-b.seq);
+      for (const n of nails) {
         rows.push({
-          entry_id: e.id,
-          created_at: e.created_at,
-          user: e.user,
-          resolved_chain: e.resolved_chain,
-          seq: p.seq,
-          label: p.position_label,
-          target_pct: p.target_profile_pct,
-          staff: p.staff_reading,
-          elev: p.elevation,
-          delta: p.delta_to_design,
-          comment: p.comment || ''
+          created_at:e.created_at,user:e.user,sv:e.resolved_chain,cl_design_level:e.cl_design_level,
+          side:n.side,nail:n.label,travel:n.travel,offset:n.offset,xfall_pct:n.xfall_pct*100,
+          design:n.design,staff:n.staff,notes:e.notes||''
         });
       }
     }
     return rows;
-  },
-
-  async csv() {
-    const { entries, pointsByEntry } = await this.getData();
-    if (entries.length === 0) { toast('No entries to export.', 'error'); return; }
-
-    const wide = this.buildWide(entries, pointsByEntry);
-    const csv = Papa.unparse(wide);
-    downloadBlob(new Blob([csv], { type: 'text/csv;charset=utf-8;' }), `VFieldbook_AsBuilt_${new Date().toISOString().slice(0,10)}.csv`);
-    toast('CSV exported.', 'success');
-  },
-
-  async xlsx() {
-    const { entries, pointsByEntry } = await this.getData();
-    if (entries.length === 0) { toast('No entries to export.', 'error'); return; }
-
-    const wide = this.buildWide(entries, pointsByEntry);
-    const long = this.buildLong(entries, pointsByEntry);
-
-    const wb = XLSX.utils.book_new();
-    const wsWide = XLSX.utils.json_to_sheet(wide);
-    const wsLong = XLSX.utils.json_to_sheet(long);
-    XLSX.utils.book_append_sheet(wb, wsWide, 'Entries_Wide');
-    XLSX.utils.book_append_sheet(wb, wsLong, 'Points_Long');
-
-    const buf = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-    downloadBlob(new Blob([buf], { type: 'application/octet-stream' }), `VFieldbook_AsBuilt_${new Date().toISOString().slice(0,10)}.xlsx`);
-    toast('Excel workbook exported.', 'success');
   }
-};
 
-// ---- PWA ----
-App.pwa = {
-  deferredPrompt: null,
-  init() {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js').catch(() => {});
-    }
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      this.deferredPrompt = e;
-      document.getElementById('installBanner').style.display = 'block';
+  function dlCSV(rows, fn) {
+    if (!rows.length){ toast('No data to export','warning'); return; }
+    const csv=Papa.unparse(rows);
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));
+    a.download=fn; a.click();
+  }
+
+  function dlXLSX(sheets, fn) {
+    const wb=XLSX.utils.book_new();
+    sheets.forEach(({name,data})=>{
+      if (data.length) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(data), name);
     });
-  },
-  install() {
-    if (this.deferredPrompt) {
-      this.deferredPrompt.prompt();
-      this.deferredPrompt = null;
-      document.getElementById('installBanner').style.display = 'none';
+    XLSX.writeFile(wb,fn);
+  }
+
+  async function dlMatrixXLSX(fn) {
+    const {rows,positions}=await matrixRows();
+    if (!rows.length){ toast('No data to export','warning'); return; }
+
+    const wb=XLSX.utils.book_new();
+    
+    // Create worksheet with custom headers
+    const ws=XLSX.utils.aoa_to_sheet([]);
+    
+    // Header row 1: position percentages (merged cells)
+    const hdr1=['SV'];
+    positions.forEach(pos=>{
+      hdr1.push((pos*100).toFixed(1),'',''); // position spans 3 columns
+    });
+    
+    // Header row 2: Actual/Design/Diff sub-columns
+    const hdr2=[''];
+    positions.forEach(()=>{
+      hdr2.push('Actual','Design','Diff');
+    });
+
+    // Add headers
+    XLSX.utils.sheet_add_aoa(ws,[hdr1,hdr2],{origin:'A1'});
+
+    // Add data rows
+    rows.forEach((row,i)=>{
+      const dataRow=[row.SV];
+      positions.forEach(pos=>{
+        const key=(pos*100).toFixed(1);
+        dataRow.push(row[`${key}_Actual`]||'',row[`${key}_Design`]||'',row[`${key}_Diff`]||'');
+      });
+      XLSX.utils.sheet_add_aoa(ws,[dataRow],{origin:`A${i+3}`});
+    });
+
+    // Set column widths
+    ws['!cols']=[{wch:8}]; // SV column
+    positions.forEach(()=>{
+      ws['!cols'].push({wch:10},{wch:10},{wch:8}); // Actual, Design, Diff
+    });
+
+    // Merge position header cells
+    if (!ws['!merges']) ws['!merges']=[];
+    positions.forEach((pos,i)=>{
+      const startCol=1+i*3;
+      ws['!merges'].push({
+        s:{r:0,c:startCol},
+        e:{r:0,c:startCol+2}
+      });
+    });
+
+    XLSX.utils.book_append_sheet(wb,ws,'Cross_Section_Matrix');
+    XLSX.writeFile(wb,fn);
+  }
+
+  return { wideRows, longRows, matrixRows, stakeoutRows, dlCSV, dlXLSX, dlMatrixXLSX };
+})();
+
+// ============================================================
+// MODULE 11: AS-BUILT UI
+// ============================================================
+const AsBuiltUI = (() => {
+  let _all=[], _fil=[];
+
+  async function load(filters={}) {
+    _all=await db.asbuilt_entries.orderBy('created_at').reverse().toArray();
+    apply(filters);
+  }
+
+  function apply(f={}) {
+    _fil=_all.filter(e=>{
+      if (f.df && e.created_at<f.df) return false;
+      if (f.dt && e.created_at>f.dt+'T23:59:59') return false;
+      if (f.cf!==undefined&&f.cf!==''&&e.resolved_chain<+f.cf) return false;
+      if (f.ct!==undefined&&f.ct!==''&&e.resolved_chain>+f.ct) return false;
+      return true;
+    });
+    render();
+  }
+
+  function render() {
+    const tbody=document.getElementById('ab-body');
+    document.getElementById('ab-count').textContent=_fil.length;
+    if (!_fil.length){
+      tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted);">No entries found</td></tr>';
+      return;
+    }
+    tbody.innerHTML=_fil.map(e=>`
+      <tr>
+        <td class="mono" style="font-size:0.78rem;">${new Date(e.created_at).toLocaleString()}</td>
+        <td>${esc(e.user)}</td>
+        <td class="mono">${e.input_index}</td>
+        <td class="mono text-amber">${e.resolved_chain}</td>
+        <td>${e.point_count}</td>
+        <td style="font-size:0.75rem;color:var(--text-muted);">${esc(e.notes||'')}</td>
+        <td><button class="btn-icon view-btn" data-id="${esc(e.id)}"><i class="bi bi-eye"></i></button></td>
+      </tr>
+    `).join('');
+    tbody.querySelectorAll('.view-btn').forEach(b=>b.addEventListener('click',()=>showDetail(b.dataset.id)));
+  }
+
+  async function showDetail(id) {
+    const e=await db.asbuilt_entries.get(id);
+    if (!e) return;
+    const pts=(await db.asbuilt_points.where('entry_id').equals(id).toArray()).sort((a,b)=>a.seq-b.seq);
+    const body=document.getElementById('entry-detail-body');
+    body.innerHTML=`
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.5rem;margin-bottom:1rem;">
+        <div class="dp-card" style="padding:0.75rem;text-align:center;">
+          <div class="dp-label">Chain</div><div class="dp-chain">${esc(e.resolved_chain)}</div>
+        </div>
+        <div class="dp-card" style="padding:0.75rem;text-align:center;">
+          <div class="dp-label">CL Level</div><div class="dp-value mono">${fmt(e.cl_design_level)}</div>
+        </div>
+        <div class="dp-card" style="padding:0.75rem;text-align:center;">
+          <div class="dp-label">Points</div><div class="dp-value mono">${e.point_count}</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-bottom:0.75rem;">
+        <div style="font-size:0.75rem;color:var(--text-muted);">Left: <span class="mono">${fmtPct(e.left_xfall)}</span></div>
+        <div style="font-size:0.75rem;color:var(--text-muted);">Right: <span class="mono">${fmtPct(e.right_xfall)}</span></div>
+      </div>
+      <div class="verify-wrap">
+        <table class="fb-table">
+          <thead><tr><th>#</th><th>Label</th><th>Target%</th><th>Staff</th><th>Elevation</th><th>Δ</th><th>Comment</th></tr></thead>
+          <tbody>${pts.map(p=>{
+            const d=p.delta_to_design;
+            const dHtml=d!=null?`<span class="${Math.abs(d)<0.001?'delta-zero':d>0?'delta-plus':'delta-minus'}">${d>=0?'+':''}${parseFloat(d).toFixed(3)}</span>`:'—';
+            return `<tr>
+              <td>${p.seq}</td>
+              <td class="mono text-amber">${esc(p.position_label)}</td>
+              <td class="mono">${p.target_profile_pct!=null?(p.target_profile_pct*100).toFixed(2)+'%':'—'}</td>
+              <td class="mono">${p.staff_reading!=null?parseFloat(p.staff_reading).toFixed(3):'—'}</td>
+              <td class="mono">${p.elevation!=null?parseFloat(p.elevation).toFixed(3):'—'}</td>
+              <td>${dHtml}</td>
+              <td style="font-size:0.75rem;color:var(--text-muted);">${esc(p.comment||'')}</td>
+            </tr>`;
+          }).join('')}</tbody>
+        </table>
+      </div>
+      ${e.notes?`<div class="alert-fb info" style="margin-top:0.5rem;font-size:0.78rem;"><i class="bi bi-chat-left-text me-1"></i>${esc(e.notes)}</div>`:''}
+      <div style="margin-top:0.75rem;">
+        <label class="fb-label">Edit Notes</label>
+        <textarea id="edit-notes" class="fb-input" rows="2">${esc(e.notes||'')}</textarea>
+        <button class="btn-outline-amber" id="btn-save-notes" data-id="${esc(id)}" style="margin-top:0.4rem;font-size:0.78rem;">
+          <i class="bi bi-floppy me-1"></i>Save Notes
+        </button>
+      </div>
+    `;
+
+    document.getElementById('btn-save-notes').addEventListener('click', async el=>{
+      const notes=document.getElementById('edit-notes').value;
+      await db.asbuilt_entries.update(id,{notes});
+      toast('Notes saved');
+      load();
+    });
+
+    document.getElementById('btn-del-entry').onclick=async()=>{
+      if (confirm(`Delete entry for CHAIN ${e.resolved_chain}?`)) {
+        await db.asbuilt_entries.delete(id);
+        await db.asbuilt_points.where('entry_id').equals(id).delete();
+        bootstrap.Modal.getInstance(document.getElementById('modal-entry')).hide();
+        load();
+        toast('Entry deleted','danger');
+      }
+    };
+
+    new bootstrap.Modal(document.getElementById('modal-entry')).show();
+  }
+
+  return { load };
+})();
+
+// ============================================================
+// MODULE 12: DESIGN TABLE UI
+// ============================================================
+const DesignTableUI = (() => {
+  const PS=50;
+  let _all=[], _fil=[], _pg=1;
+
+  async function load() {
+    _all=await db.design_points.orderBy('chain').toArray();
+    _fil=[..._all]; _pg=1; render();
+  }
+
+  function filter(q) {
+    _fil=q?_all.filter(p=>p.chain.toString().includes(q)):[..._all];
+    _pg=1; render();
+  }
+
+  function render() {
+    const tbody=document.getElementById('dt-body');
+    document.getElementById('dt-count').textContent=`${_fil.length} pts`;
+    const start=(_pg-1)*PS;
+    const pg=_fil.slice(start,start+PS);
+    if (!pg.length){
+      tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted);">No design points found</td></tr>';
+    } else {
+      tbody.innerHTML=pg.map((p,i)=>`
+        <tr>
+          <td style="color:var(--text-muted);">${start+i+1}</td>
+          <td class="mono text-amber">${p.chain}</td>
+          <td class="mono">${fmtPct(p.left_xfall)}</td>
+          <td class="mono">${fmt(p.cl_design_level)}</td>
+          <td class="mono">${fmtPct(p.right_xfall)}</td>
+          <td style="font-size:0.72rem;color:var(--text-muted);">${p.imported_at?new Date(p.imported_at).toLocaleDateString():'—'}</td>
+        </tr>
+      `).join('');
+    }
+    const tot=Math.ceil(_fil.length/PS);
+    const pag=document.getElementById('dt-pagination');
+    if (tot>1) {
+      pag.style.display='flex';
+      pag.innerHTML=`
+        <button class="btn-icon" id="dt-prev" ${_pg<=1?'disabled':''} style="font-size:0.75rem;padding:0.3rem 0.5rem;"><i class="bi bi-chevron-left"></i></button>
+        <span>Page ${_pg} / ${tot}</span>
+        <button class="btn-icon" id="dt-next" ${_pg>=tot?'disabled':''} style="font-size:0.75rem;padding:0.3rem 0.5rem;"><i class="bi bi-chevron-right"></i></button>
+      `;
+      document.getElementById('dt-prev')?.addEventListener('click',()=>{_pg--;render();});
+      document.getElementById('dt-next')?.addEventListener('click',()=>{_pg++;render();});
+    } else { pag.style.display='none'; }
+  }
+
+  return { load, filter };
+})();
+
+// ============================================================
+// MODULE 13: MAIN APP / ROUTER
+// ============================================================
+const App = (() => {
+  let _cur=null;
+
+  function go(page) {
+    if (page==='login') {
+      document.getElementById('page-login').style.display='flex';
+      document.getElementById('app-shell').classList.add('d-none');
+      document.getElementById('page-login').classList.add('active');
+      _cur='login'; return;
+    }
+    document.getElementById('page-login').classList.remove('active');
+    document.getElementById('page-login').style.display='none';
+    document.getElementById('app-shell').classList.remove('d-none');
+
+    document.querySelectorAll('.app-page').forEach(p=>p.classList.remove('active'));
+    const el=document.getElementById(`pg-${page}`);
+    if (el) el.classList.add('active');
+
+    const titles={dashboard:'Dashboard',import:'Import Design','design-table':'Design Points',
+                  capture:'Verify / Capture',stakeout:'Setting Out',asbuilt:'As-Built Table',export:'Export',settings:'Settings'};
+    document.getElementById('nav-page-title').textContent=titles[page]||page;
+
+    document.querySelectorAll('.nav-link-item').forEach(a=>{
+      a.classList.toggle('active', a.dataset.nav===page);
+    });
+
+    // Close offcanvas
+    const oc=bootstrap.Offcanvas.getInstance(document.getElementById('sidebar-nav'));
+    if (oc) oc.hide();
+
+    // Update user display
+    const u=Auth.getUser();
+    document.getElementById('sidebar-username').textContent=u;
+    document.getElementById('sidebar-avatar').textContent=u.charAt(0).toUpperCase();
+
+    _cur=page;
+    _loadPage(page);
+  }
+
+  async function _loadPage(pg) {
+    switch(pg) {
+      case 'dashboard': await _loadDash(); break;
+      case 'design-table': await DesignTableUI.load(); break;
+      case 'capture': await _initCapture(); break;
+      case 'stakeout': await _initStakeout(); break;
+      case 'asbuilt': await AsBuiltUI.load(); break;
+      case 'settings': _loadSettings(); break;
     }
   }
-};
 
-// ---- HELPERS ----
-function toast(msg, type='info') {
-  const t = document.createElement('div');
-  t.className = 'vf-toast ' + type;
-  t.textContent = msg;
-  document.body.appendChild(t);
-  setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity 0.3s'; setTimeout(() => t.remove(), 300); }, 3000);
-}
+  async function _loadDash() {
+    const [dc,ec,pc,sc]=await Promise.all([db.design_points.count(),db.asbuilt_entries.count(),db.asbuilt_points.count(),db.stakeout_entries.count()]);
+    document.getElementById('s-design').textContent=dc;
+    document.getElementById('s-entries').textContent=ec;
+    document.getElementById('s-points').textContent=pc;
+    document.getElementById('s-stakeout').textContent=sc;
+    const recent=await db.asbuilt_entries.orderBy('created_at').reverse().limit(5).toArray();
+    const el=document.getElementById('dash-recent');
+    el.innerHTML=recent.length?recent.map(e=>`
+      <div class="entry-row-item">
+        <div>
+          <div style="font-size:0.82rem;font-weight:600;" class="mono">Chain ${e.resolved_chain}</div>
+          <div style="font-size:0.72rem;color:var(--text-muted);">${new Date(e.created_at).toLocaleString()} · ${e.point_count} pts</div>
+        </div>
+        <span class="tag tag-amber">${esc(e.user)}</span>
+      </div>
+    `).join(''):'<div style="padding:1.5rem;text-align:center;color:var(--text-muted);font-size:0.82rem;">No entries yet</div>';
+  }
 
-function downloadBlob(blob, filename) {
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-}
+  async function _initCapture() {
+    const cfg=Cfg.get();
+    document.getElementById('exact-toggle').checked=(cfg.matchMode==='exact');
+    const bmSec=document.getElementById('bm-section');
+    if (cfg.useBM) {
+      bmSec.style.setProperty('display','block','important');
+      if (cfg.bmHeight) document.getElementById('bm-ht').value=cfg.bmHeight;
+      if (cfg.bmStaff) document.getElementById('bm-st').value=cfg.bmStaff;
+      _updateCollim();
+    } else {
+      bmSec.style.setProperty('display','none','important');
+    }
+    const n=parseInt(document.getElementById('pt-count').value)||5;
+    CaptureUI.render(n, Cap.getPoint());
+  }
 
-function showConfirm(title, body, onConfirm) {
-  document.getElementById('confirmTitle').textContent = title;
-  document.getElementById('confirmBody').innerHTML = body;
-  const modal = new bootstrap.Modal(document.getElementById('confirmModal'));
-  const okBtn = document.getElementById('confirmOk');
-  const handler = () => { modal.hide(); onConfirm(); okBtn.removeEventListener('click', handler); };
-  okBtn.addEventListener('click', handler);
-  modal.show();
-}
+  async function _initStakeout() {
+    const cfg=Cfg.get();
+    document.getElementById('so-exact-toggle').checked=(cfg.matchMode==='exact');
+    if (cfg.bmHeight) document.getElementById('so-bm-ht').value=cfg.bmHeight;
+    if (cfg.bmStaff) document.getElementById('so-bm-st').value=cfg.bmStaff;
+    _updateSOCollim();
+    Stakeout.render();
+  }
 
-// ---- SHOW APP ----
-App.showApp = function() {
-  document.getElementById('loginPage').style.display = 'none';
-  document.getElementById('appShell').style.display = 'block';
-  App.nav('dashboard');
-};
+  function _updateSOCollim() {
+    const bm=parseFloat(document.getElementById('so-bm-ht').value);
+    const st=parseFloat(document.getElementById('so-bm-st').value);
+    if (!isNaN(bm)&&!isNaN(st)) {
+      const c=bm+st; Stakeout.setCollim(c);
+      document.getElementById('so-collim').value=c.toFixed(3);
+    } else { Stakeout.setCollim(null); document.getElementById('so-collim').value=''; }
+  }
 
-// ---- FILE DROP ----
-document.addEventListener('DOMContentLoaded', () => {
-  const drop = document.getElementById('fileDrop');
-  if (drop) {
-    ['dragenter','dragover'].forEach(e => drop.addEventListener(e, (ev) => { ev.preventDefault(); drop.classList.add('dragover'); }));
-    ['dragleave','drop'].forEach(e => drop.addEventListener(e, (ev) => { ev.preventDefault(); drop.classList.remove('dragover'); }));
-    drop.addEventListener('drop', (e) => {
-      const file = e.dataTransfer.files[0];
-      if (file) {
-        const input = document.getElementById('csvFile');
-        const dt = new DataTransfer();
-        dt.items.add(file);
-        input.files = dt.files;
-        App.import.fileSelected(input);
+  async function _doSOLookup() {
+    const v=parseFloat(document.getElementById('so-idx-input').value);
+    const exact=document.getElementById('so-exact-toggle').checked;
+    const rEl=document.getElementById('so-lkp-result');
+    const eEl=document.getElementById('so-lkp-err');
+    rEl.style.display='none'; eEl.style.display='none';
+    if (isNaN(v)){ toast('Enter a valid SV / chainage','warning'); return; }
+    const res=await Lookup.find(v, exact?'exact':'closest');
+    if (res.found) {
+      const p=res.point; Stakeout.setPoint(p);
+      document.getElementById('so-r-chain').textContent=p.chain;
+      document.getElementById('so-r-cl').textContent=fmt(p.cl_design_level);
+      document.getElementById('so-r-match-type').textContent=res.matchType;
+      document.getElementById('so-r-lxfall').textContent=fmtPct(p.left_xfall);
+      document.getElementById('so-r-rxfall').textContent=fmtPct(p.right_xfall);
+      rEl.style.display='block';
+      Stakeout.render();
+    } else {
+      eEl.innerHTML=`<i class="bi bi-exclamation-triangle me-2"></i>${esc(res.reason)}`; eEl.style.display='block';
+      Stakeout.setPoint(null); Stakeout.render();
+    }
+  }
+
+  async function _doSaveStakeout() {
+    const pt=Stakeout.getPoint();
+    const leftNails=Stakeout.getLeftNails();
+    const rightNails=Stakeout.getRightNails();
+    const notes=document.getElementById('so-notes').value;
+    const inputIdx=parseFloat(document.getElementById('so-idx-input').value);
+    const entryId=uuid();
+    const now=new Date().toISOString();
+    const user=Auth.getUser();
+
+    await db.stakeout_entries.add({id:entryId,created_at:now,user,input_index:inputIdx,
+      resolved_chain:pt.chain,design_point_id:pt.id,cl_design_level:pt.cl_design_level,
+      left_xfall:pt.left_xfall,right_xfall:pt.right_xfall,notes});
+
+    const allNails=[...leftNails.map(n=>({...n,side:'left'})),...rightNails.map(n=>({...n,side:'right'}))];
+    await db.stakeout_nails.bulkAdd(allNails.map((n,i)=>({
+      id:uuid(),entry_id:entryId,seq:i+1,side:n.side,label:n.label,travel:n.travel,offset:n.offset,
+      xfall_pct:n.xfall,design:n.design,staff:n.staff
+    })));
+
+    toast(`Stakeout saved — SV ${pt.chain}`,'success');
+
+    // Clear for next entry
+    document.getElementById('so-idx-input').value='';
+    document.getElementById('so-lkp-result').style.display='none';
+    document.getElementById('so-notes').value='';
+    Stakeout.clear();
+    document.getElementById('so-idx-input').focus();
+  }
+
+  function _updateCollim() {
+    const bm=parseFloat(document.getElementById('bm-ht').value);
+    const st=parseFloat(document.getElementById('bm-st').value);
+    if (!isNaN(bm)&&!isNaN(st)) {
+      const c=bm+st; Cap.setCollim(c);
+      document.getElementById('collim-val').textContent=c.toFixed(3);
+    } else { Cap.setCollim(null); document.getElementById('collim-val').textContent='—'; }
+  }
+
+  function _loadSettings() {
+    const s=Cfg.get();
+    document.getElementById('s-timeout').value=s.timeout;
+    document.getElementById('s-use-bm').checked=s.useBM;
+    document.getElementById('s-bm-ht').value=s.bmHeight||'';
+    document.getElementById('s-bm-st').value=s.bmStaff||'';
+    document.getElementById('s-prof-l').value=s.profLeft;
+    document.getElementById('s-prof-r').value=s.profRight;
+    document.getElementById('s-match').value=s.matchMode;
+    Promise.all([db.design_points.count(),db.asbuilt_entries.count(),db.asbuilt_points.count(),db.stakeout_entries.count(),db.stakeout_nails.count()]).then(([d,e,p,s,n])=>{
+      const el=document.getElementById('s-db-stats');
+      if (el) el.innerHTML=`Design Points: ${d} &nbsp;|&nbsp; Entries: ${e} &nbsp;|&nbsp; Verify Points: ${p} &nbsp;|&nbsp; Stakeout: ${s} (${n} nails)`;
+    });
+  }
+
+  function _onNetChange() {
+    const on=navigator.onLine;
+    document.getElementById('net-dot').classList.toggle('offline',!on);
+    document.getElementById('net-label').textContent=on?'ONLINE':'OFFLINE';
+  }
+
+  function _bindAll() {
+    // Network
+    window.addEventListener('online',_onNetChange);
+    window.addEventListener('offline',_onNetChange);
+    _onNetChange();
+
+    // Login
+    document.getElementById('login-form').addEventListener('submit', async e=>{
+      e.preventDefault();
+      const u=document.getElementById('login-user').value.trim();
+      const p=document.getElementById('login-pass').value;
+      const btn=document.getElementById('login-btn');
+      const errEl=document.getElementById('login-error');
+      const spinEl=document.getElementById('login-spin');
+      const iconEl=document.getElementById('login-icon');
+      btn.disabled=true; errEl.style.setProperty('display','none','important');
+      spinEl.classList.remove('d-none'); iconEl.classList.add('d-none');
+      try {
+        const ok=await Auth.login(u,p);
+        if (ok) { go('dashboard'); }
+        else { errEl.style.setProperty('display','flex','important'); }
+      } catch { errEl.style.setProperty('display','flex','important'); }
+      finally { btn.disabled=false; spinEl.classList.add('d-none'); iconEl.classList.remove('d-none'); }
+    });
+
+    // Toggle pw
+    document.getElementById('toggle-pw').addEventListener('click',()=>{
+      const inp=document.getElementById('login-pass');
+      const icon=document.getElementById('toggle-pw-icon');
+      inp.type=inp.type==='password'?'text':'password';
+      icon.className=inp.type==='password'?'bi bi-eye':'bi bi-eye-slash';
+    });
+
+    // Logout
+    document.getElementById('btn-logout').addEventListener('click',()=>{ Auth.logout(); go('login'); });
+
+    // Nav links
+    document.querySelectorAll('[data-nav]').forEach(el=>{
+      el.addEventListener('click',e=>{ e.preventDefault(); if(Auth.check()) go(el.dataset.nav); });
+    });
+
+    // Quick action buttons (data-nav on dashboard)
+    document.querySelectorAll('[data-nav]').forEach(el=>{
+      el.addEventListener('click',e=>{ e.preventDefault(); if(Auth.check()) go(el.dataset.nav); });
+    });
+
+    // ---- IMPORT ----
+    const dropZ=document.getElementById('drop-zone');
+    const fileInp=document.getElementById('file-inp');
+    dropZ.addEventListener('dragover',e=>{ e.preventDefault(); dropZ.classList.add('dragover'); });
+    dropZ.addEventListener('dragleave',()=>dropZ.classList.remove('dragover'));
+    dropZ.addEventListener('drop',e=>{ e.preventDefault(); dropZ.classList.remove('dragover'); if(e.dataTransfer.files[0]) _doParseFile(e.dataTransfer.files[0]); });
+    fileInp.addEventListener('change',e=>{ if(e.target.files[0]) _doParseFile(e.target.files[0]); });
+
+    document.getElementById('btn-do-import').addEventListener('click',_doImport);
+    document.getElementById('btn-cancel-import').addEventListener('click',()=>{
+      document.getElementById('col-map-section').classList.add('d-none');
+      document.getElementById('import-result').classList.add('d-none');
+    });
+
+    // ---- DESIGN TABLE ----
+    document.getElementById('dt-search').addEventListener('input',e=>DesignTableUI.filter(e.target.value));
+    document.getElementById('btn-clear-design').addEventListener('click',async()=>{
+      if (confirm('Clear all imported design points?')){ await db.design_points.clear(); DesignTableUI.load(); toast('Design points cleared','warning'); }
+    });
+
+    // ---- CAPTURE ----
+    document.getElementById('btn-lookup').addEventListener('click',_doLookup);
+    document.getElementById('idx-input').addEventListener('keydown',e=>{ if(e.key==='Enter') _doLookup(); });
+    document.getElementById('pt-count').addEventListener('change',e=>{
+      const n=parseInt(e.target.value); Cap.setN(n);
+      CaptureUI.render(n, Cap.getPoint());
+    });
+    document.getElementById('bm-ht').addEventListener('input',_updateCollim);
+    document.getElementById('bm-st').addEventListener('input',_updateCollim);
+    document.getElementById('btn-save-cap').addEventListener('click',_openSaveModal);
+    document.getElementById('btn-confirm-save').addEventListener('click',_doSave);
+    document.getElementById('btn-clear-cap').addEventListener('click',()=>{
+      document.getElementById('idx-input').value='';
+      document.getElementById('lkp-result').style.display='none';
+      document.getElementById('lkp-err').style.display='none';
+      document.getElementById('entry-notes').value='';
+      Cap.clear(); Cap.setN(5); document.getElementById('pt-count').value=5;
+      CaptureUI.render(5,null);
+    });
+
+    // ---- SETTING OUT / STAKEOUT ----
+    document.getElementById('btn-so-lookup').addEventListener('click',_doSOLookup);
+    document.getElementById('so-idx-input').addEventListener('keydown',e=>{ if(e.key==='Enter') _doSOLookup(); });
+    document.getElementById('so-bm-ht').addEventListener('input',_updateSOCollim);
+    document.getElementById('so-bm-st').addEventListener('input',_updateSOCollim);
+    document.getElementById('btn-add-left').addEventListener('click',()=>Stakeout.addNail('left'));
+    document.getElementById('btn-add-right').addEventListener('click',()=>Stakeout.addNail('right'));
+    document.getElementById('btn-save-so').addEventListener('click',_doSaveStakeout);
+    document.getElementById('btn-clear-so').addEventListener('click',()=>{
+      document.getElementById('so-idx-input').value='';
+      document.getElementById('so-lkp-result').style.display='none';
+      document.getElementById('so-lkp-err').style.display='none';
+      document.getElementById('so-notes').value='';
+      Stakeout.clear();
+    });
+
+    // ---- AS-BUILT FILTERS ----
+    document.getElementById('btn-filt-apply').addEventListener('click',async()=>{
+      await AsBuiltUI.load({df:document.getElementById('f-date-from').value,dt:document.getElementById('f-date-to').value,
+                             cf:document.getElementById('f-ch-from').value,ct:document.getElementById('f-ch-to').value});
+    });
+    document.getElementById('btn-filt-clear').addEventListener('click',async()=>{
+      ['f-date-from','f-date-to','f-ch-from','f-ch-to'].forEach(id=>document.getElementById(id).value='');
+      await AsBuiltUI.load();
+    });
+
+    // ---- EXPORT ----
+    document.getElementById('btn-ew-csv').addEventListener('click',async()=>{ const d=await Exporter.wideRows(); Exporter.dlCSV(d,`fieldbook_wide_${_dt()}.csv`); });
+    document.getElementById('btn-ew-xlsx').addEventListener('click',async()=>{ const d=await Exporter.wideRows(); Exporter.dlXLSX([{name:'Entries_Wide',data:d}],`fieldbook_wide_${_dt()}.xlsx`); });
+    document.getElementById('btn-pl-csv').addEventListener('click',async()=>{ const d=await Exporter.longRows(); Exporter.dlCSV(d,`fieldbook_long_${_dt()}.csv`); });
+    document.getElementById('btn-pl-xlsx').addEventListener('click',async()=>{ const d=await Exporter.longRows(); Exporter.dlXLSX([{name:'Points_Long',data:d}],`fieldbook_long_${_dt()}.xlsx`); });
+    document.getElementById('btn-matrix-xlsx').addEventListener('click',async()=>{ await Exporter.dlMatrixXLSX(`fieldbook_matrix_${_dt()}.xlsx`); toast('Matrix export complete'); });
+    document.getElementById('btn-so-csv').addEventListener('click',async()=>{ const d=await Exporter.stakeoutRows(); Exporter.dlCSV(d,`fieldbook_stakeout_${_dt()}.csv`); });
+    document.getElementById('btn-so-xlsx').addEventListener('click',async()=>{ const d=await Exporter.stakeoutRows(); Exporter.dlXLSX([{name:'Stakeout',data:d}],`fieldbook_stakeout_${_dt()}.xlsx`); });
+    document.getElementById('btn-full-xlsx').addEventListener('click',async()=>{
+      const [w,l,{rows:m,positions},so]=await Promise.all([Exporter.wideRows(),Exporter.longRows(),Exporter.matrixRows(),Exporter.stakeoutRows()]);
+      
+      // Create matrix sheet manually for full workbook
+      const wb=XLSX.utils.book_new();
+      
+      // Add matrix sheet with proper headers
+      const ws=XLSX.utils.aoa_to_sheet([]);
+      const hdr1=['SV'];
+      positions.forEach(pos=>{ hdr1.push((pos*100).toFixed(1),'',''); });
+      const hdr2=[''];
+      positions.forEach(()=>{ hdr2.push('Actual','Design','Diff'); });
+      XLSX.utils.sheet_add_aoa(ws,[hdr1,hdr2],{origin:'A1'});
+      m.forEach((row,i)=>{
+        const dataRow=[row.SV];
+        positions.forEach(pos=>{
+          const key=(pos*100).toFixed(1);
+          dataRow.push(row[`${key}_Actual`]||'',row[`${key}_Design`]||'',row[`${key}_Diff`]||'');
+        });
+        XLSX.utils.sheet_add_aoa(ws,[dataRow],{origin:`A${i+3}`});
+      });
+      ws['!cols']=[{wch:8}];
+      positions.forEach(()=>{ ws['!cols'].push({wch:10},{wch:10},{wch:8}); });
+      if (!ws['!merges']) ws['!merges']=[];
+      positions.forEach((pos,i)=>{
+        const startCol=1+i*3;
+        ws['!merges'].push({s:{r:0,c:startCol},e:{r:0,c:startCol+2}});
+      });
+      XLSX.utils.book_append_sheet(wb,ws,'Cross_Section_Matrix');
+      
+      // Add other sheets
+      if (so.length) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(so), 'Stakeout');
+      if (w.length) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(w), 'Entries_Wide');
+      if (l.length) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(l), 'Points_Long');
+      
+      XLSX.writeFile(wb,`fieldbook_full_${_dt()}.xlsx`);
+      toast('Full workbook exported');
+    });
+
+    // ---- SETTINGS ----
+    document.getElementById('btn-save-settings').addEventListener('click',()=>{
+      Cfg.save({
+        timeout:parseInt(document.getElementById('s-timeout').value)||30,
+        useBM:document.getElementById('s-use-bm').checked,
+        bmHeight:parseFloat(document.getElementById('s-bm-ht').value)||null,
+        bmStaff:parseFloat(document.getElementById('s-bm-st').value)||null,
+        profLeft:parseFloat(document.getElementById('s-prof-l').value)||-10,
+        profRight:parseFloat(document.getElementById('s-prof-r').value)||-10,
+        matchMode:document.getElementById('s-match').value
+      });
+      toast('Settings saved');
+    });
+    document.getElementById('btn-chg-pw').addEventListener('click',async()=>{
+      const c=document.getElementById('s-cur-pw').value;
+      const n=document.getElementById('s-new-pw').value;
+      const co=document.getElementById('s-conf-pw').value;
+      const msg=document.getElementById('pw-msg');
+      if (n!==co){ msg.className='alert-fb danger'; msg.textContent='New passwords do not match'; msg.style.display='block'; return; }
+      if (n.length<6){ msg.className='alert-fb warning'; msg.textContent='Min 6 characters'; msg.style.display='block'; return; }
+      try {
+        await Auth.changePw(c,n);
+        msg.className='alert-fb success'; msg.textContent='Password updated successfully'; msg.style.display='block';
+        ['s-cur-pw','s-new-pw','s-conf-pw'].forEach(id=>document.getElementById(id).value='');
+      } catch(err){ msg.className='alert-fb danger'; msg.textContent=err.message; msg.style.display='block'; }
+    });
+    document.getElementById('btn-clear-all').addEventListener('click',async()=>{
+      if (confirm('Clear ALL data? This cannot be undone.')) {
+        await db.design_points.clear(); await db.asbuilt_entries.clear(); await db.asbuilt_points.clear();
+        await db.stakeout_entries.clear(); await db.stakeout_nails.clear();
+        _loadSettings(); toast('All data cleared','danger');
       }
     });
   }
 
-  // Enter key on verify input
-  document.getElementById('verifyIndex')?.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') App.verify.lookup();
-  });
+  async function _doParseFile(file) {
+    try {
+      const {headers}=await Importer.parseFile(file);
+      const mapSec=document.getElementById('col-map-section');
+      mapSec.classList.remove('d-none');
+      document.getElementById('import-result').classList.add('d-none');
+      const am=Importer.autoMap(headers);
+      const opts='<option value="">— Select —</option>'+headers.map(h=>`<option value="${esc(h)}">${esc(h)}</option>`).join('');
+      ['map-chain','map-lxfall','map-cl','map-rxfall'].forEach(id=>{ document.getElementById(id).innerHTML=opts; });
+      if(am.chain) document.getElementById('map-chain').value=am.chain;
+      if(am.lx)    document.getElementById('map-lxfall').value=am.lx;
+      if(am.cl)    document.getElementById('map-cl').value=am.cl;
+      if(am.rx)    document.getElementById('map-rxfall').value=am.rx;
+    } catch(err){ toast(`Parse error: ${err.message}`,'danger'); }
+  }
 
-  // Enter key on login
-  document.getElementById('loginPass')?.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') App.auth.login();
-  });
-});
+  async function _doImport() {
+    const map={chain:document.getElementById('map-chain').value,lx:document.getElementById('map-lxfall').value,
+               cl:document.getElementById('map-cl').value,rx:document.getElementById('map-rxfall').value};
+    if (!map.chain||!map.cl){ toast('CHAIN and CL Design Level are required','danger'); return; }
+    try {
+      const r=await Importer.importData(map);
+      document.getElementById('col-map-section').classList.add('d-none');
+      const res=document.getElementById('import-result');
+      res.classList.remove('d-none');
+      let html=`<div class="alert-fb success mb-2"><i class="bi bi-check-circle me-2"></i><strong>${r.imported} rows imported.</strong> Chain range: ${r.minChain} – ${r.maxChain}.`;
+      if(r.dupes>0) html+=` ${r.dupes} duplicate(s) kept last.`;
+      if(r.errors.length) html+=` ${r.errors.length} row(s) skipped.`;
+      html+=`</div>`;
+      if(r.errors.length) html+=`<div class="alert-fb danger" style="font-size:0.75rem;font-family:var(--font-data);">${r.errors.slice(0,5).map(e=>`Row ${e.r}: ${esc(e.msg)}`).join('<br>')}</div>`;
+      res.innerHTML=html;
+      toast(`Import complete: ${r.imported} points`,'success');
+    } catch(err){ toast(`Import failed: ${err.message}`,'danger'); }
+  }
 
-// ---- BOOT ----
-(async function boot() {
-  App.pwa.init();
-  await DB.open();
-  const loggedIn = await App.auth.init();
-  if (loggedIn) App.showApp();
+  async function _doLookup() {
+    const v=parseFloat(document.getElementById('idx-input').value);
+    const exact=document.getElementById('exact-toggle').checked;
+    const rEl=document.getElementById('lkp-result');
+    const eEl=document.getElementById('lkp-err');
+    rEl.style.display='none'; eEl.style.display='none';
+    if (isNaN(v)){ toast('Enter a valid index number','warning'); return; }
+    const res=await Lookup.find(v, exact?'exact':'closest');
+    if (res.found) {
+      const p=res.point; Cap.setPoint(p);
+      document.getElementById('r-chain').textContent=p.chain;
+      document.getElementById('r-match-type').textContent=res.matchType;
+      document.getElementById('r-lxfall').textContent=fmtPct(p.left_xfall);
+      document.getElementById('r-cl').textContent=fmt(p.cl_design_level);
+      document.getElementById('r-rxfall').textContent=fmtPct(p.right_xfall);
+      rEl.style.display='block';
+      const n=parseInt(document.getElementById('pt-count').value)||5;
+      CaptureUI.render(n,p);
+    } else {
+      eEl.innerHTML=`<i class="bi bi-exclamation-triangle me-2"></i>${esc(res.reason)}`; eEl.style.display='block';
+      Cap.setPoint(null); CaptureUI.refreshSaveBtn();
+    }
+  }
+
+  function _openSaveModal() {
+    const pt=Cap.getPoint();
+    const rows=Cap.getRows();
+    const n=parseInt(document.getElementById('pt-count').value);
+    const notes=document.getElementById('entry-notes').value;
+    const prev=document.getElementById('save-preview');
+    prev.innerHTML=`
+      <div class="dp-card" style="margin-bottom:0.5rem;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-bottom:0.5rem;">
+          <div><div class="dp-label">CHAIN</div><div class="dp-chain">${pt.chain}</div></div>
+          <div><div class="dp-label">CL Level</div><div class="dp-value">${fmt(pt.cl_design_level)}</div></div>
+        </div>
+        <div class="verify-wrap">
+          <table class="fb-table" style="min-width:0;">
+            <thead><tr><th>Label</th><th>Staff</th><th>Elevation</th><th>Δ</th></tr></thead>
+            <tbody>${rows.filter(r=>r.staff!==null||r.elev!==null).map(r=>{
+              const d=r.delta;
+              const dStr=d!=null?`${d>=0?'+':''}${d.toFixed(3)}`:'—';
+              return `<tr><td class="mono">${esc(r.label)}</td><td class="mono">${r.staff!=null?parseFloat(r.staff).toFixed(3):'—'}</td><td class="mono">${r.elev!=null?parseFloat(r.elev).toFixed(3):'—'}</td><td class="mono ${d!=null&&d>0?'delta-plus':d!=null&&d<0?'delta-minus':'delta-zero'}">${dStr}</td></tr>`;
+            }).join('')}</tbody>
+          </table>
+        </div>
+        ${notes?`<div style="margin-top:0.4rem;font-size:0.75rem;color:var(--text-muted);"><i class="bi bi-chat-left-text me-1"></i>${esc(notes)}</div>`:''}
+      </div>
+    `;
+    new bootstrap.Modal(document.getElementById('modal-save')).show();
+  }
+
+  async function _doSave() {
+    const pt=Cap.getPoint();
+    const rows=Cap.getRows();
+    const n=parseInt(document.getElementById('pt-count').value);
+    const notes=document.getElementById('entry-notes').value;
+    const inputIdx=parseFloat(document.getElementById('idx-input').value);
+    const entryId=uuid();
+    const now=new Date().toISOString();
+    const user=Auth.getUser();
+
+    await db.asbuilt_entries.add({id:entryId,created_at:now,user,input_index:inputIdx,
+      resolved_chain:pt.chain,design_point_id:pt.id,cl_design_level:pt.cl_design_level,
+      left_xfall:pt.left_xfall,right_xfall:pt.right_xfall,point_count:n,notes});
+
+    await db.asbuilt_points.bulkAdd(rows.map((r,i)=>({
+      id:uuid(),entry_id:entryId,seq:i+1,position_label:r.label,
+      target_profile_pct:r.pct,staff_reading:r.staff,elevation:r.elev,
+      delta_to_design:r.delta,comment:r.comment
+    })));
+
+    bootstrap.Modal.getInstance(document.getElementById('modal-save')).hide();
+    toast(`Entry saved — CHAIN ${pt.chain}`,'success');
+
+    // Clear for next entry; keep point count
+    const savedN=n;
+    document.getElementById('idx-input').value='';
+    document.getElementById('lkp-result').style.display='none';
+    document.getElementById('entry-notes').value='';
+    Cap.clear();
+    document.getElementById('pt-count').value=savedN;
+    Cap.setN(savedN);
+    CaptureUI.render(savedN,null);
+    document.getElementById('idx-input').focus();
+  }
+
+  function _dt() { return new Date().toISOString().slice(0,10); }
+
+  async function init() {
+    await Auth.init();
+    _bindAll();
+    if (Auth.check()) go('dashboard');
+    else go('login');
+  }
+
+  return { init, go };
 })();
+
+// ============================================================
+// SERVICE WORKER REGISTRATION
+// ============================================================
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('./sw.js')
+      .then(r=>console.log('[Fieldbook] SW registered:',r.scope))
+      .catch(e=>console.warn('[Fieldbook] SW registration failed:',e));
+  });
+}
+
+// ============================================================
+// BOOT
+// ============================================================
+document.addEventListener('DOMContentLoaded', ()=>App.init());
 </script>
 </body>
 </html>
